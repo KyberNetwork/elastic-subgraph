@@ -1,0 +1,88 @@
+
+½µdataSources:
+  - kind: ethereum/contract
+    mapping:
+      abis:
+        - file:
+            /: /ipfs/QmPVEvP1cdwsGXL7a8Q6VWr5h9BTXEy7UY4GEn5EygfrFP
+          name: Factory
+        - file:
+            /: /ipfs/QmXuTbDkNrN27VydxbS2huvKRk62PMgUTdPDWkxcr2w7j2
+          name: ERC20
+        - file:
+            /: /ipfs/QmbHnhUFZa6qqqRyubUYhXntox1TCBxqryaBM1iNGqVJzT
+          name: ERC20SymbolBytes
+        - file:
+            /: /ipfs/QmQCP6Pdp1MqpwRv2qoPHuUTwZGy7Q3eDHg4w5kzwE9mBj
+          name: ERC20NameBytes
+        - file:
+            /: /ipfs/QmULRc8Ac1J6YFy11z7JRpyThb6f7nmL5mMTQvN7LKj2Vy
+          name: Pool
+      apiVersion: 0.0.4
+      entities:
+        - Pool
+        - Token
+      eventHandlers:
+        - event: >-
+            PoolCreated(indexed address,indexed address,indexed
+            uint16,int24,address)
+          handler: handlePoolCreated
+      file:
+        /: /ipfs/QmVWyBCBrbboyuRtompD2M16f2MTF7pQm4sXES1HcukiQi
+      kind: ethereum/events
+      language: wasm/assemblyscript
+    name: Factory
+    network: rinkeby
+    source:
+      abi: Factory
+      address: '0x0c7369f931a8d809e443c1d4a5dce663ff888a73'
+      startBlock: 9983421
+schema:
+  file:
+    /: /ipfs/QmQDfNVyHb4ecYCHcdp4Sj92RdVjyYKc8efCRXbu1iY3bJ
+specVersion: 0.0.2
+templates:
+  - kind: ethereum/contract
+    mapping:
+      abis:
+        - file:
+            /: /ipfs/QmULRc8Ac1J6YFy11z7JRpyThb6f7nmL5mMTQvN7LKj2Vy
+          name: Pool
+        - file:
+            /: /ipfs/QmPVEvP1cdwsGXL7a8Q6VWr5h9BTXEy7UY4GEn5EygfrFP
+          name: Factory
+        - file:
+            /: /ipfs/QmXuTbDkNrN27VydxbS2huvKRk62PMgUTdPDWkxcr2w7j2
+          name: ERC20
+      apiVersion: 0.0.4
+      entities:
+        - Pool
+        - Token
+      eventHandlers:
+        - event: 'Initialize(uint160,int24)'
+          handler: handleInitialize
+        - event: >-
+            Swap(indexed address,indexed
+            address,int256,int256,uint160,uint128,int24)
+          handler: handleSwap
+        - event: >-
+            Mint(address,indexed address,indexed int24,indexed
+            int24,uint128,uint256,uint256)
+          handler: handleMint
+        - event: >-
+            Burn(indexed address,indexed int24,indexed
+            int24,uint128,uint256,uint256)
+          handler: handleBurn
+        - event: >-
+            Flash(indexed address,indexed
+            address,uint256,uint256,uint256,uint256)
+          handler: handleFlash
+      file:
+        /: /ipfs/QmdSHWpye2fz5RTMyLRDTHUZk8GouTDTdqv2yxwbTE9zK9
+      kind: ethereum/events
+      language: wasm/assemblyscript
+    name: Pool
+    network: rinkeby
+    source:
+      abi: Pool
+µ

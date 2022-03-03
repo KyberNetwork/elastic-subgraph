@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
-import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token } from '../types/schema'
+import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token, Pair } from '../types/schema'
 import { Pool as PoolABI } from '../types/Factory/Pool'
-import { BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
 import {
   Burn as BurnEvent,
   Flash as FlashEvent,
@@ -18,23 +18,29 @@ import {
   updateTickDayData,
   updateTokenDayData,
   updateTokenHourData,
-  updateUniswapDayData
+  updateUniswapDayData,
+  updatePairDayData,
+  updatePairHourData
 } from '../utils/intervalUpdates'
 import { createTick, feeTierToTickSpacing } from '../utils/tick'
 
 export function handleInitialize(event: Initialize): void {
   let pool = Pool.load(event.address.toHexString())
-  pool.sqrtPrice = event.params.sqrtPriceX96
+  pool.sqrtPrice = event.params.sqrtP
   pool.tick = BigInt.fromI32(event.params.tick)
   // update token prices
   let token0 = Token.load(pool.token0)
   let token1 = Token.load(pool.token1)
+
+  let pairAddress = token0.id + '_' + token1.id
 
   // update ETH price now that prices could have changed
   let bundle = Bundle.load('1')
   bundle.ethPriceUSD = getEthPriceInUSD()
   bundle.save()
 
+  updatePairHourData(event, pairAddress)
+  updatePairDayData(event, pairAddress)
   updatePoolDayData(event)
   updatePoolHourData(event)
 
@@ -53,8 +59,12 @@ export function handleMint(event: MintEvent): void {
 
   let token0 = Token.load(pool.token0)
   let token1 = Token.load(pool.token1)
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
+  let amount0 = convertTokenToDecimal(event.params.qty0, token0.decimals)
+  let amount1 = convertTokenToDecimal(event.params.qty1, token1.decimals)
+
+  let pairAddress = token0.id + '_' + token1.id
+  let pair = Pair.load(pairAddress)
+  pair.txCount = pair.txCount.plus(ONE_BI)
 
   let amountUSD = amount0
     .times(token0.derivedETH.times(bundle.ethPriceUSD))
@@ -86,8 +96,16 @@ export function handleMint(event: MintEvent): void {
     BigInt.fromI32(event.params.tickLower).le(pool.tick as BigInt) &&
     BigInt.fromI32(event.params.tickUpper).gt(pool.tick as BigInt)
   ) {
-    pool.liquidity = pool.liquidity.plus(event.params.amount)
+    pool.liquidity = pool.liquidity.plus(event.params.qty)
+    pair.liquidity = pair.liquidity.plus(event.params.qty)
   }
+
+  pair.totalValueLockedToken0 = pair.totalValueLockedToken0.plus(amount0)
+  pair.totalValueLockedToken1 = pair.totalValueLockedToken1.plus(amount1)
+  pair.totalValueLockedETH = pair.totalValueLockedToken0
+    .times(token0.derivedETH)
+    .plus(pair.totalValueLockedToken1.times(token1.derivedETH))
+  pair.totalValueLockedUSD = pair.totalValueLockedETH.times(bundle.ethPriceUSD)
 
   pool.totalValueLockedToken0 = pool.totalValueLockedToken0.plus(amount0)
   pool.totalValueLockedToken1 = pool.totalValueLockedToken1.plus(amount1)
@@ -110,7 +128,7 @@ export function handleMint(event: MintEvent): void {
   mint.owner = event.params.owner
   mint.sender = event.params.sender
   mint.origin = event.transaction.from
-  mint.amount = event.params.amount
+  mint.amount = event.params.qty
   mint.amount0 = amount0
   mint.amount1 = amount1
   mint.amountUSD = amountUSD
@@ -136,7 +154,7 @@ export function handleMint(event: MintEvent): void {
     upperTick = createTick(upperTickId, upperTickIdx, pool.id, event)
   }
 
-  let amount = event.params.amount
+  let amount = event.params.qty
   lowerTick.liquidityGross = lowerTick.liquidityGross.plus(amount)
   lowerTick.liquidityNet = lowerTick.liquidityNet.plus(amount)
   upperTick.liquidityGross = upperTick.liquidityGross.plus(amount)
@@ -146,6 +164,8 @@ export function handleMint(event: MintEvent): void {
   // level requires reimplementing some of the swapping code from v3-core.
 
   updateUniswapDayData(event)
+  updatePairDayData(event, pairAddress)
+  updatePairHourData(event, pairAddress)
   updatePoolDayData(event)
   updatePoolHourData(event)
   updateTokenDayData(token0 as Token, event)
@@ -158,6 +178,7 @@ export function handleMint(event: MintEvent): void {
   pool.save()
   factory.save()
   mint.save()
+  pair.save()
 
   // Update inner tick vars and save the ticks
   updateTickFeeVarsAndSave(lowerTick!, event)
@@ -172,8 +193,11 @@ export function handleBurn(event: BurnEvent): void {
 
   let token0 = Token.load(pool.token0)
   let token1 = Token.load(pool.token1)
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
+  let amount0 = convertTokenToDecimal(event.params.qty0, token0.decimals)
+  let amount1 = convertTokenToDecimal(event.params.qty1, token1.decimals)
+
+  let pairId = token0.id + '_' + token1.id
+  let pair = Pair.load(pairId)
 
   let amountUSD = amount0
     .times(token0.derivedETH.times(bundle.ethPriceUSD))
@@ -197,6 +221,7 @@ export function handleBurn(event: BurnEvent): void {
 
   // pool data
   pool.txCount = pool.txCount.plus(ONE_BI)
+  pair.txCount = pair.txCount.plus(ONE_BI)
   // Pools liquidity tracks the currently active liquidity given pools current tick.
   // We only want to update it on burn if the position being burnt includes the current tick.
   if (
@@ -204,7 +229,8 @@ export function handleBurn(event: BurnEvent): void {
     BigInt.fromI32(event.params.tickLower).le(pool.tick as BigInt) &&
     BigInt.fromI32(event.params.tickUpper).gt(pool.tick as BigInt)
   ) {
-    pool.liquidity = pool.liquidity.minus(event.params.amount)
+    pool.liquidity = pool.liquidity.minus(event.params.qty)
+    pair.liquidity = pair.liquidity.minus(event.params.qty)
   }
 
   pool.totalValueLockedToken0 = pool.totalValueLockedToken0.minus(amount0)
@@ -213,6 +239,13 @@ export function handleBurn(event: BurnEvent): void {
     .times(token0.derivedETH)
     .plus(pool.totalValueLockedToken1.times(token1.derivedETH))
   pool.totalValueLockedUSD = pool.totalValueLockedETH.times(bundle.ethPriceUSD)
+
+  pair.totalValueLockedToken0 = pair.totalValueLockedToken0.minus(amount0)
+  pair.totalValueLockedToken1 = pair.totalValueLockedToken1.minus(amount1)
+  pair.totalValueLockedETH = pair.totalValueLockedToken0
+    .times(token0.derivedETH)
+    .plus(pair.totalValueLockedToken1.times(token1.derivedETH))
+  pair.totalValueLockedUSD = pair.totalValueLockedETH.times(bundle.ethPriceUSD)
 
   // reset aggregates with new amounts
   factory.totalValueLockedETH = factory.totalValueLockedETH.plus(pool.totalValueLockedETH)
@@ -228,7 +261,7 @@ export function handleBurn(event: BurnEvent): void {
   burn.token1 = pool.token1
   burn.owner = event.params.owner
   burn.origin = event.transaction.from
-  burn.amount = event.params.amount
+  burn.amount = event.params.qty
   burn.amount0 = amount0
   burn.amount1 = amount1
   burn.amountUSD = amountUSD
@@ -241,7 +274,7 @@ export function handleBurn(event: BurnEvent): void {
   let upperTickId = poolAddress + '#' + BigInt.fromI32(event.params.tickUpper).toString()
   let lowerTick = Tick.load(lowerTickId)
   let upperTick = Tick.load(upperTickId)
-  let amount = event.params.amount
+  let amount = event.params.qty
   lowerTick.liquidityGross = lowerTick.liquidityGross.minus(amount)
   lowerTick.liquidityNet = lowerTick.liquidityNet.minus(amount)
   upperTick.liquidityGross = upperTick.liquidityGross.minus(amount)
@@ -250,6 +283,8 @@ export function handleBurn(event: BurnEvent): void {
   updateUniswapDayData(event)
   updatePoolDayData(event)
   updatePoolHourData(event)
+  updatePairDayData(event, pairId)
+  updatePairHourData(event, pairId)
   updateTokenDayData(token0 as Token, event)
   updateTokenDayData(token1 as Token, event)
   updateTokenHourData(token0 as Token, event)
@@ -260,6 +295,7 @@ export function handleBurn(event: BurnEvent): void {
   token0.save()
   token1.save()
   pool.save()
+  pair.save()
   factory.save()
   burn.save()
 }
@@ -277,11 +313,14 @@ export function handleSwap(event: SwapEvent): void {
   let token0 = Token.load(pool.token0)
   let token1 = Token.load(pool.token1)
 
+  let pairId = token0.id + '_' + token1.id
+  let pair = Pair.load(pairId)
+
   let oldTick = pool.tick!
 
   // amounts - 0/1 are token deltas: can be positive or negative
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
+  let amount0 = convertTokenToDecimal(event.params.deltaQty0, token0.decimals)
+  let amount1 = convertTokenToDecimal(event.params.deltaQty1, token1.decimals)
 
   // need absolute amounts for volume
   let amount0Abs = amount0
@@ -330,10 +369,23 @@ export function handleSwap(event: SwapEvent): void {
 
   // Update the pool with the new active liquidity, price, and tick.
   pool.liquidity = event.params.liquidity
-  pool.tick = BigInt.fromI32(event.params.tick as i32)
-  pool.sqrtPrice = event.params.sqrtPriceX96
+  pool.tick = BigInt.fromI32(event.params.currentTick)
+  pool.sqrtPrice = event.params.sqrtP
   pool.totalValueLockedToken0 = pool.totalValueLockedToken0.plus(amount0)
   pool.totalValueLockedToken1 = pool.totalValueLockedToken1.plus(amount1)
+
+  pair.volumeToken0 = pair.volumeToken0.plus(amount0Abs)
+  pair.volumeToken1 = pair.volumeToken1.plus(amount1Abs)
+  pair.volumeUSD = pair.volumeUSD.plus(amountTotalUSDTracked)
+  pair.untrackedVolumeUSD = pair.untrackedVolumeUSD.plus(amountTotalUSDUntracked)
+  pair.feesUSD = pair.feesUSD.plus(feesUSD)
+  pair.txCount = pair.txCount.plus(ONE_BI)
+
+  // Update the pool with the new active liquidity, price, and tick.
+  // TODO: Check liquidity of pair
+  pair.liquidity = event.params.liquidity
+  pair.totalValueLockedToken0 = pair.totalValueLockedToken0.plus(amount0)
+  pair.totalValueLockedToken1 = pair.totalValueLockedToken1.plus(amount1)
 
   // update token0 data
   token0.volume = token0.volume.plus(amount0Abs)
@@ -391,21 +443,25 @@ export function handleSwap(event: SwapEvent): void {
   swap.amount0 = amount0
   swap.amount1 = amount1
   swap.amountUSD = amountTotalUSDTracked
-  swap.tick = BigInt.fromI32(event.params.tick as i32)
-  swap.sqrtPriceX96 = event.params.sqrtPriceX96
+  swap.tick = BigInt.fromI32(event.params.currentTick)
+  swap.sqrtPriceX96 = event.params.sqrtP
   swap.logIndex = event.logIndex
 
   // update fee growth
   let poolContract = PoolABI.bind(event.address)
-  let feeGrowthGlobal0X128 = poolContract.feeGrowthGlobal0X128()
-  let feeGrowthGlobal1X128 = poolContract.feeGrowthGlobal1X128()
-  pool.feeGrowthGlobal0X128 = feeGrowthGlobal0X128 as BigInt
-  pool.feeGrowthGlobal1X128 = feeGrowthGlobal1X128 as BigInt
+
+  //TODO: add pair fee getFeeGrowthGlobal
+  pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
+  let secondsPerLiquidityData = poolContract.getSecondsPerLiquidityData()
+  pool.secondsPerLiquidityGlobal = secondsPerLiquidityData.value0
+  pool.lastSecondsPerLiquidityDataUpdateTime = secondsPerLiquidityData.value1
 
   // interval data
   let uniswapDayData = updateUniswapDayData(event)
   let poolDayData = updatePoolDayData(event)
   let poolHourData = updatePoolHourData(event)
+  let pairDayData = updatePairDayData(event, pairId)
+  let pairHourData = updatePairHourData(event, pairId)
   let token0DayData = updateTokenDayData(token0 as Token, event)
   let token1DayData = updateTokenDayData(token1 as Token, event)
   let token0HourData = updateTokenHourData(token0 as Token, event)
@@ -415,6 +471,16 @@ export function handleSwap(event: SwapEvent): void {
   uniswapDayData.volumeETH = uniswapDayData.volumeETH.plus(amountTotalETHTracked)
   uniswapDayData.volumeUSD = uniswapDayData.volumeUSD.plus(amountTotalUSDTracked)
   uniswapDayData.feesUSD = uniswapDayData.feesUSD.plus(feesUSD)
+
+  pairHourData.volumeUSD = pairHourData.volumeUSD.plus(amountTotalUSDTracked)
+  pairHourData.volumeToken0 = pairHourData.volumeToken0.plus(amount0Abs)
+  pairHourData.volumeToken1 = pairHourData.volumeToken1.plus(amount1Abs)
+  pairHourData.feesUSD = pairHourData.feesUSD.plus(feesUSD)
+
+  pairDayData.volumeUSD = pairDayData.volumeUSD.plus(amountTotalUSDTracked)
+  pairDayData.volumeToken0 = pairDayData.volumeToken0.plus(amount0Abs)
+  pairDayData.volumeToken1 = pairDayData.volumeToken1.plus(amount1Abs)
+  pairDayData.feesUSD = pairDayData.feesUSD.plus(feesUSD)
 
   poolDayData.volumeUSD = poolDayData.volumeUSD.plus(amountTotalUSDTracked)
   poolDayData.volumeToken0 = poolDayData.volumeToken0.plus(amount0Abs)
@@ -451,7 +517,10 @@ export function handleSwap(event: SwapEvent): void {
   token1DayData.save()
   uniswapDayData.save()
   poolDayData.save()
+  pairDayData.save()
+  pairHourData.save()
   factory.save()
+  pair.save()
   pool.save()
   token0.save()
   token1.save()
@@ -493,10 +562,12 @@ export function handleFlash(event: FlashEvent): void {
   // update fee growth
   let pool = Pool.load(event.address.toHexString())
   let poolContract = PoolABI.bind(event.address)
-  let feeGrowthGlobal0X128 = poolContract.feeGrowthGlobal0X128()
-  let feeGrowthGlobal1X128 = poolContract.feeGrowthGlobal1X128()
-  pool.feeGrowthGlobal0X128 = feeGrowthGlobal0X128 as BigInt
-  pool.feeGrowthGlobal1X128 = feeGrowthGlobal1X128 as BigInt
+
+  pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
+  let secondsPerLiquidityData = poolContract.getSecondsPerLiquidityData()
+  pool.secondsPerLiquidityGlobal = secondsPerLiquidityData.value0
+  pool.lastSecondsPerLiquidityDataUpdateTime = secondsPerLiquidityData.value1
+
   pool.save()
 }
 
@@ -505,8 +576,9 @@ function updateTickFeeVarsAndSave(tick: Tick, event: ethereum.Event): void {
   // not all ticks are initialized so obtaining null is expected behavior
   let poolContract = PoolABI.bind(poolAddress)
   let tickResult = poolContract.ticks(tick.tickIdx.toI32())
-  tick.feeGrowthOutside0X128 = tickResult.value2
-  tick.feeGrowthOutside1X128 = tickResult.value3
+  tick.feeGrowthOutside = tickResult.value2
+  tick.secondsPerLiquidityOutside = tickResult.value3
+
   tick.save()
 
   updateTickDayData(tick!, event)

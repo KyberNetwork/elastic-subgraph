@@ -34,23 +34,23 @@ export function createTick(tickId: string, tickIdx: i32, poolId: string, event: 
   tick.collectedFeesToken1 = ZERO_BD
   tick.collectedFeesUSD = ZERO_BD
   tick.liquidityProviderCount = ZERO_BI
-  tick.feeGrowthOutside0X128 = ZERO_BI
-  tick.feeGrowthOutside1X128 = ZERO_BI
+  tick.feeGrowthOutside = ZERO_BI
+  tick.secondsPerLiquidityOutside = ZERO_BI
 
   return tick
 }
 
 export function feeTierToTickSpacing(feeTier: BigInt): BigInt {
-  if (feeTier.equals(BigInt.fromI32(10000))) {
+  if (feeTier.equals(BigInt.fromI32(100))) {
     return BigInt.fromI32(200)
   }
-  if (feeTier.equals(BigInt.fromI32(3000))) {
+  if (feeTier.equals(BigInt.fromI32(30))) {
     return BigInt.fromI32(60)
   }
-  if (feeTier.equals(BigInt.fromI32(500))) {
+  if (feeTier.equals(BigInt.fromI32(5))) {
     return BigInt.fromI32(10)
   }
-  if (feeTier.equals(BigInt.fromI32(100))) {
+  if (feeTier.equals(BigInt.fromI32(1))) {
     return BigInt.fromI32(1)
   }
 

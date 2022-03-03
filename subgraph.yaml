@@ -1,19 +1,16 @@
 specVersion: 0.0.2
-description: Uniswap is a decentralized protocol for automated token exchange on Ethereum.
-repository: https://github.com/Uniswap/uniswap-v3-subgraph
+description: KyberSwap is DeFi’s first Dynamic Market Maker; a decentralized exchange protocol that provides frictionless crypto liquidity with extremely high flexibility and capital efficiency. KyberSwap is the first major protocol in Kyber’s liquidity hub.
+repository: https://github.com/KyberNetwork/promm-subgraph
 schema:
   file: ./schema.graphql
-graft:
-  base: QmZeCuoZeadgHkGwLwMeguyqUKz1WPWQYKcKyMCeQqGhsF
-  block: 12673736
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: mainnet
+    network: rinkeby
     source:
-      address: '0x1F98431c8aD98523631AE4a59f267346ea31F984'
+      address: '0x0c7369f931a8d809e443c1d4a5dce663ff888a73'
       abi: Factory
-      startBlock: 12369621
+      startBlock: 9983421
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -24,7 +21,7 @@ dataSources:
         - Token
       abis:
         - name: Factory
-          file: ./abis/factory.json
+          file: ./abis/ProMMFactory.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: ERC20SymbolBytes
@@ -34,45 +31,45 @@ dataSources:
         - name: Pool
           file: ./abis/pool.json
       eventHandlers:
-        - event: PoolCreated(indexed address,indexed address,indexed uint24,int24,address)
+        - event: PoolCreated(indexed address,indexed address,indexed uint16,int24,address)
           handler: handlePoolCreated
-  - kind: ethereum/contract
-    name: NonfungiblePositionManager
-    network: mainnet
-    source:
-      address: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
-      abi: NonfungiblePositionManager
-      startBlock: 12369651
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      file: ./src/mappings/position-manager.ts
-      entities:
-        - Pool
-        - Token
-      abis:
-        - name: NonfungiblePositionManager
-          file: ./abis/NonfungiblePositionManager.json
-        - name: Pool
-          file: ./abis/pool.json
-        - name: Factory
-          file: ./abis/factory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: IncreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-          handler: handleIncreaseLiquidity
-        - event: DecreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-          handler: handleDecreaseLiquidity
-        - event: Collect(indexed uint256,address,uint256,uint256)
-          handler: handleCollect
-        - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleTransfer
+  # - kind: ethereum/contract
+  #   name: AntiSnipAttackPositionManager
+  #   network: rinkeby
+  #   source:
+  #     address: '0x958935bc8dcb8b4b0adff4fceb2beb8bbb117cfc'
+  #     abi: AntiSnipAttackPositionManager
+  #     startBlock: 9983421
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     file: ./src/mappings/position-manager.ts
+  #     entities:
+  #       - Pool
+  #       - Token
+  #     abis:
+  #       - name: AntiSnipAttackPositionManager
+  #         file: ./abis/AntiSnipAttackPositionManager.json
+  #       - name: Pool
+  #         file: ./abis/pool.json
+  #       - name: Factory
+  #         file: ./abis/ProMMFactory.json
+  #       - name: ERC20
+  #         file: ./abis/ERC20.json
+  #     eventHandlers:
+  #       - event: IncreaseLiquidity(indexed uint256,uint128,uint256,uint256)
+  #         handler: handleIncreaseLiquidity
+  #       - event: DecreaseLiquidity(indexed uint256,uint128,uint256,uint256)
+  #         handler: handleDecreaseLiquidity
+  #       - event: Collect(indexed uint256,address,uint256,uint256)
+  #         handler: handleCollect
+  #       - event: Transfer(indexed address,indexed address,indexed uint256)
+  #         handler: handleTransfer
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: mainnet
+    network: rinkeby
     source:
       abi: Pool
     mapping:
@@ -87,7 +84,7 @@ templates:
         - name: Pool
           file: ./abis/pool.json
         - name: Factory
-          file: ./abis/factory.json
+          file: ./abis/ProMMFactory.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
