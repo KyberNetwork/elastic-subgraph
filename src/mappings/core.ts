@@ -28,6 +28,7 @@ export function handleInitialize(event: Initialize): void {
   let pool = Pool.load(event.address.toHexString())
   pool.sqrtPrice = event.params.sqrtP
   pool.tick = BigInt.fromI32(event.params.tick)
+
   // update token prices
   let token0 = Token.load(pool.token0)
   let token1 = Token.load(pool.token1)
@@ -49,6 +50,7 @@ export function handleInitialize(event: Initialize): void {
   token1.derivedETH = findEthPerToken(token1 as Token)
   token0.save()
   token1.save()
+  pool.save()
 }
 
 export function handleMint(event: MintEvent): void {
