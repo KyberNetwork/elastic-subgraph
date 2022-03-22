@@ -5,7 +5,7 @@ import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { exponentToBigDecimal, safeDiv } from '../utils/index'
 
 const WETH_ADDRESS = '0xc778417e063141139fce010982780140aa0cd5ab'
-const USDC_WETH_03_POOL = '0xbbebc3eeefdf18a9e3b22e9d4baf8d57e3bc226c'
+const USDC_WETH_03_POOL = '0xe5aef4936c16bfa1d48d04c5ce84218719df3498'
 
 // token where amounts should contribute to tracked volume and liquidity
 // usually tokens that many tokens are paired with s
@@ -30,7 +30,11 @@ export let WHITELIST_TOKENS: string[] = [
   '0x956f47f50a910163d8bf957cf5846d573e7f87ca', // FEI
   '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0', // MATIC
   '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9', // AAVE
-  '0xfe2e637202056d30016725477c5da089ab0a043a' // sETH2
+  '0xfe2e637202056d30016725477c5da089ab0a043a', // sETH2
+
+  '0x01be23585060835e02b77ef475b0cc51aa1e0709', // link
+  '0x6f072ce36c65fd5a1f2534e5598e43b9d2fa7c77', //Test1
+  '0x07efdb214ee4260f3351e1048766fcd225e6e25e' // test2
 ]
 
 let STABLE_COINS: string[] = [
@@ -39,7 +43,12 @@ let STABLE_COINS: string[] = [
   '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
   '0x0000000000085d4780b73119b644ae5ecd22b376', // TUSD
   '0x956f47f50a910163d8bf957cf5846d573e7f87ca',
-  '0x4dd28568d05f09b02220b09c2cb307bfd837cb95'
+  '0x4dd28568d05f09b02220b09c2cb307bfd837cb95',
+  '0xc7ad46e0b8a400bb3c915120d284aafba8fc4735', // DAI
+  '0x4dbcdf9b62e891a7cec5a2568c3f4faf9e8abe2b' // usdc
+  // '0x01be23585060835e02b77ef475b0cc51aa1e0709', // link
+  // '0x6f072ce36c65fd5a1f2534e5598e43b9d2fa7c77', //Test1
+  // '0x07efdb214ee4260f3351e1048766fcd225e6e25e' // test2
 ]
 
 let MINIMUM_ETH_LOCKED = BigDecimal.fromString('52')

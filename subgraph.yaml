@@ -8,9 +8,9 @@ dataSources:
     name: Factory
     network: rinkeby
     source:
-      address: '0x0c7369f931a8d809e443c1d4a5dce663ff888a73'
+      address: '0xc3c17b6a1ec3727180598a81dee384081e450084'
       abi: Factory
-      startBlock: 9983421
+      startBlock: 10362989
       # startBlock: 10194215
     mapping:
       kind: ethereum/events
@@ -34,39 +34,39 @@ dataSources:
       eventHandlers:
         - event: PoolCreated(indexed address,indexed address,indexed uint16,int24,address)
           handler: handlePoolCreated
-  # - kind: ethereum/contract
-  #   name: AntiSnipAttackPositionManager
-  #   network: rinkeby
-  #   source:
-  #     address: '0x958935bc8dcb8b4b0adff4fceb2beb8bbb117cfc'
-  #     abi: AntiSnipAttackPositionManager
-  #     startBlock: 9983421
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     file: ./src/mappings/position-manager.ts
-  #     entities:
-  #       - Pool
-  #       - Token
-  #     abis:
-  #       - name: AntiSnipAttackPositionManager
-  #         file: ./abis/AntiSnipAttackPositionManager.json
-  #       - name: Pool
-  #         file: ./abis/pool.json
-  #       - name: Factory
-  #         file: ./abis/ProMMFactory.json
-  #       - name: ERC20
-  #         file: ./abis/ERC20.json
-  #     eventHandlers:
-  #       - event: IncreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-  #         handler: handleIncreaseLiquidity
-  #       - event: DecreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-  #         handler: handleDecreaseLiquidity
-  #       - event: Collect(indexed uint256,address,uint256,uint256)
-  #         handler: handleCollect
-  #       - event: Transfer(indexed address,indexed address,indexed uint256)
-  #         handler: handleTransfer
+  - kind: ethereum/contract
+    name: AntiSnipAttackPositionManager
+    network: rinkeby
+    source:
+      address: '0x280036f0fdeec5a1c4ddc55f42c25e5302e1283e'
+      abi: AntiSnipAttackPositionManager
+      startBlock: 10362989
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/position-manager.ts
+      entities:
+        - Pool
+        - Token
+      abis:
+        - name: AntiSnipAttackPositionManager
+          file: ./abis/AntiSnipAttackPositionManager.json
+        - name: Pool
+          file: ./abis/pool.json
+        - name: Factory
+          file: ./abis/ProMMFactory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: AddLiquidity(indexed uint256,uint128,uint256,uint256,uint256)
+          handler: handleIncreaseLiquidity
+        - event: RemoveLiquidity(indexed uint256,uint128,uint256,uint256,uint256)
+          handler: handleDecreaseLiquidity
+        # - event: Collect(indexed uint256,address,uint256,uint256)
+        #   handler: handleCollect
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
 templates:
   - kind: ethereum/contract
     name: Pool
