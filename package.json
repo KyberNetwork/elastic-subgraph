@@ -4,6 +4,7 @@
   "repository": "https://github.com/graphprotocol/uniswap-v3-subgraph",
   "license": "GPL-3.0-or-later",
   "scripts": {
+    "prepare": "mustache configs/${NETWORK:-rinkeby}.json subgraph.template.yaml > subgraph.yaml && mustache configs/${NETWORK:-rinkeby}.json src/utils/constants.template.ts > src/utils/constants.ts",
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
     "create-local": "graph create ianlapham/uniswap-v3 --node http://127.0.0.1:8020",
@@ -12,6 +13,7 @@
     "deploy-dev": "graph deploy sommelier/uniswap-v3 --ipfs http://35.197.14.14:5000/ --node http://35.197.14.14:8020/ --debug",
     "deploy-staging": "graph deploy $THE_GRAPH_GITHUB_USER/$THE_GRAPH_SUBGRAPH_NAME /Uniswap --ipfs https://api.staging.thegraph.com/ipfs/ --node https://api.staging.thegraph.com/deploy/",
     "deploy-test": "graph deploy --product hosted-service viet-nv/promm-rinkeby --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
+    "deploy-bsc-test": "graph deploy --product hosted-service viet-nv/promm-bsc-testnet --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "auth": "graph auth --product hosted-service d33a1799bc73498dbc1750e3916eb862",
     "watch-local": "graph deploy ianlapham/uniswap-v3 --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001"
   },
@@ -21,6 +23,7 @@
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.2",
+    "mustache": "^4.2.0",
     "eslint-config-prettier": "^6.1.0",
     "prettier": "^1.18.2",
     "typescript": "^3.5.2"
