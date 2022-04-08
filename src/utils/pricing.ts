@@ -3,7 +3,7 @@ import { ONE_BD, ZERO_BD, ZERO_BI } from './constants'
 import { Bundle, Pool, Token } from './../types/schema'
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { exponentToBigDecimal, safeDiv } from '../utils/index'
-import { STABLE_COINS_STR, USDC_WETH_03_POOL, WETH_ADDRESS, WHITELIST_TOKENS_STR } from './constants'
+import { STABLE_COINS_STR, PRICING_POOL, WETH_ADDRESS, WHITELIST_TOKENS_STR } from './constants'
 
 let STABLE_COINS: string[] = STABLE_COINS_STR.split('|')
 
@@ -29,10 +29,9 @@ export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, t
 }
 
 export function getEthPriceInUSD(): BigDecimal {
-  // fetch eth prices for each stablecoin
-  let usdcPool = Pool.load(USDC_WETH_03_POOL) // dai is token0
-  if (usdcPool !== null) {
-    return usdcPool.token0Price
+  let pricingPool = Pool.load(PRICING_POOL)
+  if (pricingPool !== null) {
+    return pricingPool.token0Price
   } else {
     return ZERO_BD
   }

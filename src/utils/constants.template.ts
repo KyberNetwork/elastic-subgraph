@@ -6,7 +6,7 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '{{ factory_address }}'
 
 export const WETH_ADDRESS = '{{ wrapped_native_address }}'
-export const USDC_WETH_03_POOL = '{{ pricing_pools }}'
+export const PRICING_POOL = '{{ pricing_pools }}'
 
 export const STABLE_COINS_STR = '{{ stable_coins }}'
 export const WHITELIST_TOKENS_STR = '{{ whitelist_tokens }}'
