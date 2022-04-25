@@ -1,9 +1,9 @@
 {
   "network": "chapel",
-  "startBlock": "18178443",
-  "factory_address": "0x5b5371b273a09a3abb9a8565c763118fbd512cc4",
-  "position_manager_address": "0x040f1535a6682f77f790b71c222bd180a9d6a148",
-  "pricing_pools": "0x76610541a0721c566c45cf26a34c3b280ea6f894",
+  "startBlock": "18633863",
+  "factory_address": "0x2d2b8d5093d0288da2473459545fe7a2f057bd7d",
+  "position_manager_address": "0xe0a4c2a9343a79a1f5b1505c036d033c8a178f90",
+  "pricing_pools": "0x92f65e1159462d04044db7e2c63b572b31b24a72",
   "wrapped_native_address": "0xae13d989dac2f0debff460ac112a837c89baa7cd",
   "stable_coins": "0x50a8c32cca7edcb2104bfc6bd7b50fa4dc6b6673|0x102e969a101d0f5a7defb29b4090c08f8def0f42|0x74c21a9e797ef95066c33ba0cc295ca67a7f6d18",
   "whitelist_tokens": "0x51e8d106c646ca58caf32a47812e95887c071a62"

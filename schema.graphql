@@ -657,3 +657,5 @@ type TokenHourData @entity {
   # close price USD
   close: BigDecimal!
 }
+
+

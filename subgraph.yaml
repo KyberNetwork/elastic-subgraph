@@ -8,9 +8,9 @@ dataSources:
     name: Factory
     network: rinkeby
     source:
-      address: '0x584bc3d0e4304e170a2b1347672911e93973d675'
+      address: '0x54a8d6358c559e446dca7a9ba089152b9cbabbf5'
       abi: Factory
-      startBlock: 10466621
+      startBlock: 10541395
       # startBlock: 10194215
     mapping:
       kind: ethereum/events
@@ -38,9 +38,9 @@ dataSources:
     name: AntiSnipAttackPositionManager
     network: rinkeby
     source:
-      address: '0xe967960a3e83738e68a0075aa4841e0d6aaa6218'
+      address: '0xda5a50e68f1310c89a9f1b4c3a70dfe920fe7135'
       abi: AntiSnipAttackPositionManager
-      startBlock: 10466621
+      startBlock: 10541395
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -99,5 +99,7 @@ templates:
           handler: handleMint
         - event: Burn(indexed address,indexed int24,indexed int24,uint128,uint256,uint256)
           handler: handleBurn
+        - event: BurnRTokens(indexed address,uint256,uint256,uint256)
+          handler: handleBurnRTokens
         - event: Flash(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleFlash

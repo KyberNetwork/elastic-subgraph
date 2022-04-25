@@ -31,6 +31,7 @@ export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, t
 export function getEthPriceInUSD(): BigDecimal {
   let pricingPool = Pool.load(PRICING_POOL)
   if (pricingPool !== null) {
+    if (pricingPool.token0.toString() == WETH_ADDRESS) return pricingPool.token1Price
     return pricingPool.token0Price
   } else {
     return ZERO_BD

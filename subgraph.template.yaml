@@ -69,6 +69,67 @@ dataSources:
         #   handler: handleCollect
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
+  {{#reward_locker}}
+  - kind: ethereum/contract
+    name: KyberRewardLocker
+    network: {{network}}
+    source:
+      address: '{{address}}'
+      abi: KyberRewardLocker
+      startBlock: {{startBlock}}  # contract creation block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/rewardLocker.ts
+      entities:   # defines which entities are written to stores
+        - RewardLockers
+      abis:
+        - name: KyberRewardLocker
+          file: ./abis/KyberRewardLocker.json
+        - name: KyberFairLaunch
+          file: ./abis/KyberFairLaunch.json
+      eventHandlers:
+        - event: RewardContractAdded(indexed address,indexed address,bool)
+          handler: handleRewardContractAdded
+        - event: Vested(indexed address,indexed address,uint256,uint256)
+          handler: handleVestd
+  - kind: ethereum/contract
+    name: KyberFairLaunch
+    network: {{network}}
+    source:
+      abi: KyberFairLaunch
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/fairLaunch.ts
+      entities:
+        - Pool
+        - Token
+      abis:
+        - name: KyberFairLaunch
+          file: ./abis/KyberFairLaunch.json
+      eventHandlers:
+        - event: AddPool(uint32,uint32,uint32,uint256)
+          handler: handleAddPool
+        - event: Deposit(uint256)
+          handler: handleDeposit
+        - event: EmergencyWithdraw(uint256)
+          handler: hanldeEmergencyWithdraw
+        - event: EmergencyWithdrawForOwner(address,uint256)
+          handler: hanldeEmergencyWithdraw
+        - event: Exit(address,indexed uint256,indexed uint256,indexed uint256)
+          handler: handleExit
+        - event: Harvest(address,address,indexed uint256)
+          handler: handleHarvest
+        - event: Join(indexed uint256, indexed uint256, indexed uint256)
+          handler: handleHarvest
+        - event: SyncLiq(indexed uint256, indexed uint256, indexed uint256)
+          handler: handleSyncLiquidity
+        - event: Withdraw(uint256)
+          handler: handleWithdraw
+  {{/reward_locker}}
 templates:
   - kind: ethereum/contract
     name: Pool
@@ -99,5 +160,7 @@ templates:
           handler: handleMint
         - event: Burn(indexed address,indexed int24,indexed int24,uint128,uint256,uint256)
           handler: handleBurn
+        - event: BurnRTokens(indexed address,uint256,uint256,uint256)
+          handler: handleBurnRTokens
         - event: Flash(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleFlash
