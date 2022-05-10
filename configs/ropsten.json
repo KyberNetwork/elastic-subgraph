@@ -1,0 +1,10 @@
+{
+  "network": "ropsten",
+  "startBlock": "12250882",
+  "factory_address": "0x48f6d7dae56623dde5a0d56b283165cae1753d70",
+  "position_manager_address": "0xb99ad0a400aff7ca5ed7d07410a81ed7fc8f7a0e",
+  "pricing_pools": "0x50669f3a2419368d6616579c11ecc9699399ced1",
+  "wrapped_native_address": "0xc778417e063141139fce010982780140aa0cd5ab",
+  "stable_coins": "0xad6d458402f60fd3bd25163575031acdce07538d|0x068b43f7f2f2c6a662c36e201144ae45f7a1c040|0x65bd1f48f1dd07bb285a3715c588f75684128ace",
+  "whitelist_tokens": "0x8b4ddf9f13f382aff76d262f6c8c50e6d7961b94"
+}

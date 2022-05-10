@@ -11,7 +11,9 @@
     "deploy-local": "graph deploy viet-nv/promm --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "deploy-test": "graph deploy --product hosted-service viet-nv/promm-rinkeby --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-bsc-test": "graph deploy --product hosted-service viet-nv/promm-bsc-testnet --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
-    "watch-local": "graph deploy viet-nv/promm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001"
+    "deploy-ropsten": "graph deploy --product hosted-service viet-nv/promm-ropsten --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
+    "watch-local": "graph deploy viet-nv/promm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",
+    "auth": "graph auth --product hosted-service d33a1799bc73498dbc1750e3916eb862"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.21.1",
