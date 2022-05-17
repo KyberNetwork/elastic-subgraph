@@ -52,6 +52,8 @@ export function handleMint(event: MintEvent): void {
   let bundle = Bundle.load('1')
   let poolAddress = event.address.toHexString()
   let pool = Pool.load(poolAddress)
+  let poolContract = PoolABI.bind(event.address)
+
   let factory = Factory.load(FACTORY_ADDRESS)
 
   let token0 = Token.load(pool.token0)
@@ -98,6 +100,8 @@ export function handleMint(event: MintEvent): void {
     .times(token0.derivedETH)
     .plus(pool.totalValueLockedToken1.times(token1.derivedETH))
   pool.totalValueLockedUSD = pool.totalValueLockedETH.times(bundle.ethPriceUSD)
+
+  pool.totalSupply = poolContract.totalSupply()
 
   // reset aggregates with new amounts
   factory.totalValueLockedETH = factory.totalValueLockedETH.plus(pool.totalValueLockedETH)
@@ -171,6 +175,7 @@ export function handleBurn(event: BurnEvent): void {
   let bundle = Bundle.load('1')
   let poolAddress = event.address.toHexString()
   let pool = Pool.load(poolAddress)
+  let poolContract = PoolABI.bind(event.address)
   let factory = Factory.load(FACTORY_ADDRESS)
 
   let token0 = Token.load(pool.token0)
@@ -216,6 +221,7 @@ export function handleBurn(event: BurnEvent): void {
     .times(token0.derivedETH)
     .plus(pool.totalValueLockedToken1.times(token1.derivedETH))
   pool.totalValueLockedUSD = pool.totalValueLockedETH.times(bundle.ethPriceUSD)
+  pool.totalSupply = poolContract.totalSupply()
 
   // reset aggregates with new amounts
   factory.totalValueLockedETH = factory.totalValueLockedETH.plus(pool.totalValueLockedETH)
@@ -306,6 +312,7 @@ export function handleBurnRTokens(event: BurnRTokensEvent): void {
   pool.liquidity = liquidityStateData.value0
   pool.reinvestL = liquidityStateData.value1
   pool.reinvestLLast = liquidityStateData.value2
+  pool.totalSupply = poolContract.totalSupply()
 
   pool.totalValueLockedToken0 = pool.totalValueLockedToken0.minus(amount0)
   pool.totalValueLockedToken1 = pool.totalValueLockedToken1.minus(amount1)
@@ -502,6 +509,8 @@ export function handleSwap(event: SwapEvent): void {
   pool.reinvestL = poolStateData.value1
   pool.reinvestLLast = poolStateData.value2
 
+  pool.totalSupply = poolContract.totalSupply()
+
   // interval data
   let kyberSwapDayData = updateKyberSwapDayData(event)
   let poolDayData = updatePoolDayData(event)
@@ -599,6 +608,7 @@ export function handleFlash(event: FlashEvent): void {
   pool.secondsPerLiquidityGlobal = secondsPerLiquidityData.value0
   pool.lastSecondsPerLiquidityDataUpdateTime = secondsPerLiquidityData.value1
 
+  pool.totalSupply = poolContract.totalSupply()
   pool.save()
 }
 

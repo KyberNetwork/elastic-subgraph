@@ -7,10 +7,25 @@ import {
   Transfer,
   MintPosition
 } from '../types/AntiSnipAttackPositionManager/AntiSnipAttackPositionManager'
-import { Bundle, Position, PositionSnapshot, Token } from '../types/schema'
+import { Bundle, Position, PositionSnapshot, Token, Range } from '../types/schema'
 import { ADDRESS_ZERO, factoryContract, ZERO_BD, ZERO_BI } from '../utils/constants'
 import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal, loadTransaction } from '../utils'
+
+function getRange(position: Position): Range {
+  let range = Range.load(position.pool + '_' + position.tickLower + '_' + position.tickUpper)
+  if (!range) {
+    range = new Range(position.pool + '_' + position.tickLower + '_' + position.tickUpper)
+    range.liquidity = ZERO_BI
+    range.tickLower = position.tickLower
+    range.tickUpper = position.tickUpper
+    range.token0 = position.token0
+    range.token1 = position.token1
+    range.pool = position.pool
+  }
+
+  return range as Range
+}
 
 function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
   let position = Position.load(tokenId.toString())
@@ -113,6 +128,10 @@ export function handleMintPosition(event: MintPosition): void {
 
   position.save()
 
+  let range = getRange(position as Position)
+  range.liquidity = range.liquidity.plus(event.params.liquidity)
+  range.save()
+
   savePositionSnapshot(position!, event)
 }
 
@@ -147,6 +166,10 @@ export function handleIncreaseLiquidity(event: AddLiquidity): void {
 
   position.save()
 
+  let range = getRange(position as Position)
+  range.liquidity = range.liquidity.plus(event.params.liquidity)
+  range.save()
+
   savePositionSnapshot(position!, event)
 }
 
@@ -175,6 +198,11 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
 
   position = updateFeeVars(position!, event, event.params.tokenId)
   position.save()
+
+  let range = getRange(position as Position)
+  range.liquidity = range.liquidity.minus(event.params.liquidity)
+  range.save()
+
   savePositionSnapshot(position!, event)
 }
 

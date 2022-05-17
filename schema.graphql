@@ -94,6 +94,8 @@ type Pool @entity {
   # current price tracker
   sqrtPrice: BigInt!
   # tracker for global fee growth
+  totalSupply: BigInt!
+  # tracker for global fee growth
   feeGrowthGlobal: BigInt!
   # tracker for secondsPerLiquidityData
   secondsPerLiquidityGlobal: BigInt!
@@ -147,6 +149,7 @@ type Pool @entity {
   swaps: [Swap!]! @derivedFrom(field: "pool")
   collects: [Collect!]! @derivedFrom(field: "pool")
   ticks: [Tick!]! @derivedFrom(field: "pool")
+  ranges: [Range!]! @derivedFrom(field: "pool")
 }
 
 type Tick @entity {
@@ -658,4 +661,18 @@ type TokenHourData @entity {
   close: BigDecimal!
 }
 
-
+type Range @entity {
+  id: ID!
+  # pool position is within
+  pool: Pool!
+  # allow indexing by tokens
+  token0: Token!
+  # allow indexing by tokens
+  token1: Token!
+  # lower tick of the position
+  tickLower: Tick!
+  # upper tick of the position
+  tickUpper: Tick!
+  # total position liquidity
+  liquidity: BigInt!
+}

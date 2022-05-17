@@ -120,6 +120,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.reinvestLLast = ZERO_BI
   pool.sqrtPrice = ZERO_BI
   pool.feeGrowthGlobal = ZERO_BI
+  pool.totalSupply = ZERO_BI
   pool.secondsPerLiquidityGlobal = ZERO_BI
   pool.lastSecondsPerLiquidityDataUpdateTime = event.block.timestamp
   pool.token0Price = ZERO_BD
