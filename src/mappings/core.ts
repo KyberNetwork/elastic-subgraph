@@ -1,7 +1,8 @@
 /* eslint-disable prefer-const */
 import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token } from '../types/schema'
 import { Pool as PoolABI } from '../types/Factory/Pool'
-import { BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
+import { ERC20 } from '../types/templates/pool/ERC20'
+import { BigDecimal, BigInt, ethereum, log, Address } from '@graphprotocol/graph-ts'
 import {
   Burn as BurnEvent,
   Flash as FlashEvent,
@@ -101,7 +102,13 @@ export function handleMint(event: MintEvent): void {
     .plus(pool.totalValueLockedToken1.times(token1.derivedETH))
   pool.totalValueLockedUSD = pool.totalValueLockedETH.times(bundle.ethPriceUSD)
 
-  pool.totalSupply = poolContract.totalSupply()
+  // pool.totalSupply = poolContract.totalSupply()
+  // let liquidityStateData = poolContract.getLiquidityState()
+  // pool.liquidity = liquidityStateData.value0
+  // pool.reinvestL = liquidityStateData.value1
+  // pool.reinvestLLast = liquidityStateData.value2
+
+  syncFeeGrowth(pool)
 
   // reset aggregates with new amounts
   factory.totalValueLockedETH = factory.totalValueLockedETH.plus(pool.totalValueLockedETH)
@@ -175,7 +182,6 @@ export function handleBurn(event: BurnEvent): void {
   let bundle = Bundle.load('1')
   let poolAddress = event.address.toHexString()
   let pool = Pool.load(poolAddress)
-  let poolContract = PoolABI.bind(event.address)
   let factory = Factory.load(FACTORY_ADDRESS)
 
   let token0 = Token.load(pool.token0)
@@ -221,7 +227,15 @@ export function handleBurn(event: BurnEvent): void {
     .times(token0.derivedETH)
     .plus(pool.totalValueLockedToken1.times(token1.derivedETH))
   pool.totalValueLockedUSD = pool.totalValueLockedETH.times(bundle.ethPriceUSD)
-  pool.totalSupply = poolContract.totalSupply()
+  // pool.totalSupply = poolContract.totalSupply()
+  // let liquidityStateData = poolContract.getLiquidityState()
+  // pool.liquidity = liquidityStateData.value0
+  // pool.reinvestL = liquidityStateData.value1
+  // pool.reinvestLLast = liquidityStateData.value2
+
+  // pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
+
+  syncFeeGrowth(pool)
 
   // reset aggregates with new amounts
   factory.totalValueLockedETH = factory.totalValueLockedETH.plus(pool.totalValueLockedETH)
@@ -307,12 +321,15 @@ export function handleBurnRTokens(event: BurnRTokensEvent): void {
   // pool data
   pool.txCount = pool.txCount.plus(ONE_BI)
 
-  let poolContract = PoolABI.bind(event.address)
-  let liquidityStateData = poolContract.getLiquidityState()
-  pool.liquidity = liquidityStateData.value0
-  pool.reinvestL = liquidityStateData.value1
-  pool.reinvestLLast = liquidityStateData.value2
-  pool.totalSupply = poolContract.totalSupply()
+  // let poolContract = PoolABI.bind(event.address)
+  // let liquidityStateData = poolContract.getLiquidityState()
+  // pool.liquidity = liquidityStateData.value0
+  // pool.reinvestL = liquidityStateData.value1
+  // pool.reinvestLLast = liquidityStateData.value2
+  // pool.totalSupply = poolContract.totalSupply()
+  // pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
+
+  syncFeeGrowth(pool)
 
   pool.totalValueLockedToken0 = pool.totalValueLockedToken0.minus(amount0)
   pool.totalValueLockedToken1 = pool.totalValueLockedToken1.minus(amount1)
@@ -498,18 +515,20 @@ export function handleSwap(event: SwapEvent): void {
   swap.logIndex = event.logIndex
 
   // update fee growth
-  let poolContract = PoolABI.bind(event.address)
+  // let poolContract = PoolABI.bind(event.address)
 
-  pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
-  let secondsPerLiquidityData = poolContract.getSecondsPerLiquidityData()
-  pool.secondsPerLiquidityGlobal = secondsPerLiquidityData.value0
-  pool.lastSecondsPerLiquidityDataUpdateTime = secondsPerLiquidityData.value1
+  // pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
+  // let secondsPerLiquidityData = poolContract.getSecondsPerLiquidityData()
+  // pool.secondsPerLiquidityGlobal = secondsPerLiquidityData.value0
+  // pool.lastSecondsPerLiquidityDataUpdateTime = secondsPerLiquidityData.value1
 
-  let poolStateData = poolContract.getLiquidityState()
-  pool.reinvestL = poolStateData.value1
-  pool.reinvestLLast = poolStateData.value2
+  // let poolStateData = poolContract.getLiquidityState()
+  // pool.reinvestL = poolStateData.value1
+  // pool.reinvestLLast = poolStateData.value2
 
-  pool.totalSupply = poolContract.totalSupply()
+  // pool.totalSupply = poolContract.totalSupply()
+
+  syncFeeGrowth(pool)
 
   // interval data
   let kyberSwapDayData = updateKyberSwapDayData(event)
@@ -579,13 +598,25 @@ export function handleSwap(event: SwapEvent): void {
     .abs()
     .div(tickSpacing)
 
-  if (numIters.gt(BigInt.fromI32(100))) {
-    // In case more than 100 ticks need to be updated ignore the update in
-    // order to avoid timeouts. From testing this behavior occurs only upon
-    // pool initialization. This should not be a big issue as the ticks get
-    // updated later. For early users this error also disappears when calling
-    // collect
-  } else if (newTick.gt(oldTick)) {
+  // if (numIters.gt(BigInt.fromI32(100))) {
+  //   // In case more than 100 ticks need to be updated ignore the update in
+  //   // order to avoid timeouts. From testing this behavior occurs only upon
+  //   // pool initialization. This should not be a big issue as the ticks get
+  //   // updated later. For early users this error also disappears when calling
+  //   // collect
+  // } else if (newTick.gt(oldTick)) {
+  //   let firstInitialized = oldTick.plus(tickSpacing.minus(modulo))
+  //   for (let i = firstInitialized; i.le(newTick); i = i.plus(tickSpacing)) {
+  //     loadTickUpdateFeeVarsAndSave(i.toI32(), event)
+  //   }
+  // } else if (newTick.lt(oldTick)) {
+  //   let firstInitialized = oldTick.minus(modulo)
+  //   for (let i = firstInitialized; i.ge(newTick); i = i.minus(tickSpacing)) {
+  //     loadTickUpdateFeeVarsAndSave(i.toI32(), event)
+  //   }
+  // }
+
+  if (newTick.gt(oldTick)) {
     let firstInitialized = oldTick.plus(tickSpacing.minus(modulo))
     for (let i = firstInitialized; i.le(newTick); i = i.plus(tickSpacing)) {
       loadTickUpdateFeeVarsAndSave(i.toI32(), event)
@@ -601,14 +632,9 @@ export function handleSwap(event: SwapEvent): void {
 export function handleFlash(event: FlashEvent): void {
   // update fee growth
   let pool = Pool.load(event.address.toHexString())
-  let poolContract = PoolABI.bind(event.address)
 
-  pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
-  let secondsPerLiquidityData = poolContract.getSecondsPerLiquidityData()
-  pool.secondsPerLiquidityGlobal = secondsPerLiquidityData.value0
-  pool.lastSecondsPerLiquidityDataUpdateTime = secondsPerLiquidityData.value1
+  syncFeeGrowth(pool)
 
-  pool.totalSupply = poolContract.totalSupply()
   pool.save()
 }
 
@@ -627,6 +653,8 @@ function updateTickFeeVarsAndSave(tick: Tick, event: ethereum.Event): void {
 
 function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void {
   let poolAddress = event.address
+  let pool = Pool.load(event.address.toHexString())
+
   let tick = Tick.load(
     poolAddress
       .toHexString()
@@ -634,6 +662,50 @@ function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void 
       .concat(tickId.toString())
   )
   if (tick !== null) {
-    updateTickFeeVarsAndSave(tick!, event)
+    tick.feeGrowthOutside = pool.feeGrowthGlobal.minus(tick.feeGrowthOutside)
+    tick.secondsPerLiquidityOutside = pool.secondsPerLiquidityGlobal.minus(tick.secondsPerLiquidityOutside)
+    tick.save()
+
+    updateTickDayData(tick!, event)
   }
+}
+
+function syncFeeGrowth(pool: Pool | null): void {
+  if (!pool) return
+
+  let address = Address.fromString(pool.id)
+  let poolContract = PoolABI.bind(address)
+  let totalSupply = ERC20.bind(address).totalSupply()
+
+  let liquidityState = poolContract.getLiquidityState()
+  let baseL = liquidityState.value0
+  let reinvestL = liquidityState.value1
+  let reinvestLLast = liquidityState.value2
+
+  let rMintQty = totalSupply
+    .times(reinvestL.minus(reinvestLLast))
+    .div(reinvestLLast)
+    .times(baseL)
+    .div(baseL.plus(reinvestL))
+
+  let feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
+
+  if (baseL.gt(ZERO_BI)) {
+    let X96 = BigInt.fromString('2').rightShift(96)
+    feeGrowthGlobal = feeGrowthGlobal.plus(rMintQty.times(X96).div(baseL))
+  }
+
+  pool.feeGrowthGlobal = feeGrowthGlobal
+  pool.reinvestL = reinvestL
+  pool.reinvestLLast = reinvestLLast
+  pool.liquidity = baseL
+
+  let secondsPerLiquidityData = poolContract.getSecondsPerLiquidityData()
+  pool.secondsPerLiquidityGlobal = secondsPerLiquidityData.value0
+  pool.lastSecondsPerLiquidityDataUpdateTime = secondsPerLiquidityData.value1
+
+  totalSupply = totalSupply.plus(rMintQty)
+  pool.totalSupply = totalSupply
+
+  pool.save()
 }
