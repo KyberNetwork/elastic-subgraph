@@ -676,3 +676,31 @@ type Range @entity {
   # total position liquidity
   liquidity: BigInt!
 }
+
+type JoinedPosition @entity {
+  id: ID!
+  pid: BigInt!
+  nftId: BigInt!
+  liquidity: BigInt!
+  pool: Pool!
+  position: Position!
+  fairLaunch: KyberFairLaunch!
+}
+
+type FarmingPool @entity {
+  id: ID!
+  pid: ID!
+  startTime: BigInt!
+  endTime: BigInt!
+  feeTarget: BigInt!
+  vestingDuration: BigInt!
+  pool: Pool!
+  fairLaunch: KyberFairLaunch!
+  rewardTokens: [Token!]!
+  totalRewardAmounts: [BigInt!]!
+}
+
+
+type KyberFairLaunch @entity {
+  id: ID!
+}

@@ -108,7 +108,7 @@ export function handleMint(event: MintEvent): void {
   // pool.reinvestL = liquidityStateData.value1
   // pool.reinvestLLast = liquidityStateData.value2
 
-  syncFeeGrowth(pool)
+  syncFeeGrowth(pool, true)
 
   // reset aggregates with new amounts
   factory.totalValueLockedETH = factory.totalValueLockedETH.plus(pool.totalValueLockedETH)
@@ -235,7 +235,7 @@ export function handleBurn(event: BurnEvent): void {
 
   // pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
 
-  syncFeeGrowth(pool)
+  syncFeeGrowth(pool, true)
 
   // reset aggregates with new amounts
   factory.totalValueLockedETH = factory.totalValueLockedETH.plus(pool.totalValueLockedETH)
@@ -329,7 +329,7 @@ export function handleBurnRTokens(event: BurnRTokensEvent): void {
   // pool.totalSupply = poolContract.totalSupply()
   // pool.feeGrowthGlobal = poolContract.getFeeGrowthGlobal()
 
-  syncFeeGrowth(pool)
+  syncFeeGrowth(pool, false)
 
   pool.totalValueLockedToken0 = pool.totalValueLockedToken0.minus(amount0)
   pool.totalValueLockedToken1 = pool.totalValueLockedToken1.minus(amount1)
@@ -528,7 +528,7 @@ export function handleSwap(event: SwapEvent): void {
 
   // pool.totalSupply = poolContract.totalSupply()
 
-  syncFeeGrowth(pool)
+  syncFeeGrowth(pool, true)
 
   // interval data
   let kyberSwapDayData = updateKyberSwapDayData(event)
@@ -598,25 +598,13 @@ export function handleSwap(event: SwapEvent): void {
     .abs()
     .div(tickSpacing)
 
-  // if (numIters.gt(BigInt.fromI32(100))) {
-  //   // In case more than 100 ticks need to be updated ignore the update in
-  //   // order to avoid timeouts. From testing this behavior occurs only upon
-  //   // pool initialization. This should not be a big issue as the ticks get
-  //   // updated later. For early users this error also disappears when calling
-  //   // collect
-  // } else if (newTick.gt(oldTick)) {
-  //   let firstInitialized = oldTick.plus(tickSpacing.minus(modulo))
-  //   for (let i = firstInitialized; i.le(newTick); i = i.plus(tickSpacing)) {
-  //     loadTickUpdateFeeVarsAndSave(i.toI32(), event)
-  //   }
-  // } else if (newTick.lt(oldTick)) {
-  //   let firstInitialized = oldTick.minus(modulo)
-  //   for (let i = firstInitialized; i.ge(newTick); i = i.minus(tickSpacing)) {
-  //     loadTickUpdateFeeVarsAndSave(i.toI32(), event)
-  //   }
-  // }
-
-  if (newTick.gt(oldTick)) {
+  if (numIters.gt(BigInt.fromI32(100))) {
+    // In case more than 100 ticks need to be updated ignore the update in
+    // order to avoid timeouts. From testing this behavior occurs only upon
+    // pool initialization. This should not be a big issue as the ticks get
+    // updated later. For early users this error also disappears when calling
+    // collect
+  } else if (newTick.gt(oldTick)) {
     let firstInitialized = oldTick.plus(tickSpacing.minus(modulo))
     for (let i = firstInitialized; i.le(newTick); i = i.plus(tickSpacing)) {
       loadTickUpdateFeeVarsAndSave(i.toI32(), event)
@@ -627,13 +615,25 @@ export function handleSwap(event: SwapEvent): void {
       loadTickUpdateFeeVarsAndSave(i.toI32(), event)
     }
   }
+
+  // if (newTick.gt(oldTick)) {
+  //   let firstInitialized = oldTick.plus(tickSpacing.minus(modulo))
+  //   for (let i = firstInitialized; i.le(newTick); i = i.plus(tickSpacing)) {
+  //     loadTickUpdateFeeVarsAndSave(i.toI32(), event)
+  //   }
+  // } else if (newTick.lt(oldTick)) {
+  //   let firstInitialized = oldTick.minus(modulo)
+  //   for (let i = firstInitialized; i.ge(newTick); i = i.minus(tickSpacing)) {
+  //     loadTickUpdateFeeVarsAndSave(i.toI32(), event)
+  //   }
+  // }
 }
 
 export function handleFlash(event: FlashEvent): void {
   // update fee growth
   let pool = Pool.load(event.address.toHexString())
 
-  syncFeeGrowth(pool)
+  syncFeeGrowth(pool, true)
 
   pool.save()
 }
@@ -670,7 +670,7 @@ function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void 
   }
 }
 
-function syncFeeGrowth(pool: Pool | null): void {
+function syncFeeGrowth(pool: Pool | null, updateReinvestLLast: boolean): void {
   if (!pool) return
 
   let address = Address.fromString(pool.id)
@@ -697,7 +697,8 @@ function syncFeeGrowth(pool: Pool | null): void {
 
   pool.feeGrowthGlobal = feeGrowthGlobal
   pool.reinvestL = reinvestL
-  pool.reinvestLLast = reinvestLLast
+  if (updateReinvestLLast) pool.reinvestLLast = reinvestL
+  else pool.reinvestLLast = reinvestLLast
   pool.liquidity = baseL
 
   let secondsPerLiquidityData = poolContract.getSecondsPerLiquidityData()
