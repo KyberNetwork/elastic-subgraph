@@ -9,7 +9,7 @@
     "build": "graph build",
     "create-local": "graph create viet-nv/promm --node http://127.0.0.1:8020",
     "deploy-local": "graph deploy viet-nv/promm --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-    "deploy-test": "graph deploy --product hosted-service viet-nv/promm-rinkeby --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
+    "deploy-rinkeby": "graph deploy --product hosted-service viet-nv/promm-rinkeby --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-bsc-test": "graph deploy --product hosted-service viet-nv/promm-bsc-testnet --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-ropsten": "graph deploy --product hosted-service viet-nv/promm-ropsten --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "watch-local": "graph deploy viet-nv/promm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",

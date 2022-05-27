@@ -154,7 +154,7 @@ templates:
         - name: KyberFairLaunch
           file: ./abis/KyberFairLaunch.json
       eventHandlers:
-        - event: AddPool(uint32,uint32,uint32,uint256)
+        - event: AddPool(indexed uint256,address,uint32,uint32,uint32,uint256)
           handler: handleAddPool
         - event: RenewPool(indexed uint256,uint32,uint32,uint32,uint256)
           handler: handleRenewPool

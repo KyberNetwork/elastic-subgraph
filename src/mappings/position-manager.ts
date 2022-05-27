@@ -138,8 +138,6 @@ export function handleMintPosition(event: MintPosition): void {
 export function handleIncreaseLiquidity(event: AddLiquidity): void {
   let position = getPosition(event, event.params.tokenId)
 
-  log.debug('vietnv {} {}', [event.params.liquidity.toString(), event.params.tokenId.toString()])
-
   // position was not able to be fetched
   if (position == null) {
     return

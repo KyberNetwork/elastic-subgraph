@@ -60,7 +60,9 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
   let fairLaunchContract = KyberFairLaunchContract.bind(event.params.rewardContract)
   let len = fairLaunchContract.try_poolLength()
 
+  log.debug('123456 out {}', [event.params.rewardContract.toHexString()])
   if (len.reverted) {
+    log.debug('123456 in {}', [event.params.rewardContract.toHexString()])
     return
   }
 

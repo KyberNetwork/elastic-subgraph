@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: ropsten
+    network: rinkeby
     source:
-      address: '0x48f6d7dae56623dde5a0d56b283165cae1753d70'
+      address: '0x54a8d6358c559e446dca7a9ba089152b9cbabbf5'
       abi: Factory
-      startBlock: 12250882
+      startBlock: 10541395
       # startBlock: 10194215
     mapping:
       kind: ethereum/events
@@ -36,11 +36,11 @@ dataSources:
           handler: handlePoolCreated
   - kind: ethereum/contract
     name: AntiSnipAttackPositionManager
-    network: ropsten
+    network: rinkeby
     source:
-      address: '0xb99ad0a400aff7ca5ed7d07410a81ed7fc8f7a0e'
+      address: '0xda5a50e68f1310c89a9f1b4c3a70dfe920fe7135'
       abi: AntiSnipAttackPositionManager
-      startBlock: 12250882
+      startBlock: 10541395
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -71,11 +71,11 @@ dataSources:
           handler: handleTransfer
   - kind: ethereum/contract
     name: KyberRewardLocker
-    network: ropsten
+    network: rinkeby
     source:
-      address: '0x7B2801f8ae591fd9F98a8CFbbBeDD0BE054279bc'
+      address: '0x371494e95358ae1c79b6634d0958470e8e73bdc8'
       abi: KyberRewardLocker
-      startBlock: 12251001  # contract creation block
+      startBlock: 10747225  # contract creation block
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -96,7 +96,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: ropsten
+    network: rinkeby
     source:
       abi: Pool
     mapping:
@@ -130,7 +130,7 @@ templates:
 
   - kind: ethereum/contract
     name: KyberFairLaunch
-    network: ropsten
+    network: rinkeby
     source:
       abi: KyberFairLaunch
     mapping:
@@ -151,7 +151,7 @@ templates:
         - name: KyberFairLaunch
           file: ./abis/KyberFairLaunch.json
       eventHandlers:
-        - event: AddPool(uint32,uint32,uint32,uint256)
+        - event: AddPool(indexed uint256,address,uint32,uint32,uint32,uint256)
           handler: handleAddPool
         - event: RenewPool(indexed uint256,uint32,uint32,uint32,uint256)
           handler: handleRenewPool

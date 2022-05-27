@@ -3,13 +3,13 @@ import { BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { Factory as FactoryContract } from '../types/templates/Pool/Factory'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-export const FACTORY_ADDRESS = '0x48f6d7dae56623dde5a0d56b283165cae1753d70'
+export const FACTORY_ADDRESS = '0x54a8d6358c559e446dca7a9ba089152b9cbabbf5'
 
 export const WETH_ADDRESS = '0xc778417e063141139fce010982780140aa0cd5ab'
-export const PRICING_POOL = '0x50669f3a2419368d6616579c11ecc9699399ced1'
+export const PRICING_POOL = '0xb59de154f310cd3c3008583fa312bf66a54b6e25'
 
-export const STABLE_COINS_STR = '0xad6d458402f60fd3bd25163575031acdce07538d|0x068b43f7f2f2c6a662c36e201144ae45f7a1c040|0x65bd1f48f1dd07bb285a3715c588f75684128ace'
-export const WHITELIST_TOKENS_STR = '0x8b4ddf9f13f382aff76d262f6c8c50e6d7961b94|0xcc2ba341cb4459b64c0a284abd7cd0d1fee4ee70|0x2c059ab112eb6d4bdb6105742d560876a9fe0f54|0x13c8f670d3bbd4456870a2c49bb927f166a977bd'
+export const STABLE_COINS_STR = '0xc7ad46e0b8a400bb3c915120d284aafba8fc4735|0x4dbcdf9b62e891a7cec5a2568c3f4faf9e8abe2b'
+export const WHITELIST_TOKENS_STR = '0x01be23585060835e02b77ef475b0cc51aa1e0709|0x6f072ce36c65fd5a1f2534e5598e43b9d2fa7c77|0x07efdb214ee4260f3351e1048766fcd225e6e25e'
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)
