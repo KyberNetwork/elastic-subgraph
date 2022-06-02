@@ -110,7 +110,7 @@ export function handlePoolCreated(event: PoolCreated): void {
 
   pool.token0 = token0.id
   pool.token1 = token1.id
-  pool.feeTier = BigInt.fromI32(event.params.swapFeeBps)
+  pool.feeTier = BigInt.fromI32(event.params.swapFeeUnits)
   pool.createdAtTimestamp = event.block.timestamp
   pool.createdAtBlockNumber = event.block.number
   pool.liquidityProviderCount = ZERO_BI

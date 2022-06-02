@@ -17,7 +17,7 @@
     "anonymous": false,
     "inputs": [
       { "indexed": false, "internalType": "address", "name": "feeTo", "type": "address" },
-      { "indexed": false, "internalType": "uint16", "name": "governmentFeeBps", "type": "uint16" }
+      { "indexed": false, "internalType": "uint24", "name": "governmentFeeUnits", "type": "uint24" }
     ],
     "name": "FeeConfigurationUpdated",
     "type": "event"
@@ -45,7 +45,7 @@
     "inputs": [
       { "indexed": true, "internalType": "address", "name": "token0", "type": "address" },
       { "indexed": true, "internalType": "address", "name": "token1", "type": "address" },
-      { "indexed": true, "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+      { "indexed": true, "internalType": "uint24", "name": "swapFeeUnits", "type": "uint24" },
       { "indexed": false, "internalType": "int24", "name": "tickDistance", "type": "int24" },
       { "indexed": false, "internalType": "address", "name": "pool", "type": "address" }
     ],
@@ -55,7 +55,7 @@
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+      { "indexed": true, "internalType": "uint24", "name": "swapFeeUnits", "type": "uint24" },
       { "indexed": true, "internalType": "int24", "name": "tickDistance", "type": "int24" }
     ],
     "name": "SwapFeeEnabled",
@@ -87,7 +87,7 @@
     "inputs": [
       { "internalType": "address", "name": "tokenA", "type": "address" },
       { "internalType": "address", "name": "tokenB", "type": "address" },
-      { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" }
+      { "internalType": "uint24", "name": "swapFeeUnits", "type": "uint24" }
     ],
     "name": "createPool",
     "outputs": [{ "internalType": "address", "name": "pool", "type": "address" }],
@@ -97,7 +97,7 @@
   { "inputs": [], "name": "disableWhitelist", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [
-      { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+      { "internalType": "uint24", "name": "swapFeeUnits", "type": "uint24" },
       { "internalType": "int24", "name": "tickDistance", "type": "int24" }
     ],
     "name": "enableSwapFee",
@@ -107,7 +107,7 @@
   },
   { "inputs": [], "name": "enableWhitelist", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
-    "inputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "inputs": [{ "internalType": "uint24", "name": "", "type": "uint24" }],
     "name": "feeAmountTickDistance",
     "outputs": [{ "internalType": "int24", "name": "", "type": "int24" }],
     "stateMutability": "view",
@@ -118,7 +118,7 @@
     "name": "feeConfiguration",
     "outputs": [
       { "internalType": "address", "name": "_feeTo", "type": "address" },
-      { "internalType": "uint16", "name": "_governmentFeeBps", "type": "uint16" }
+      { "internalType": "uint24", "name": "_governmentFeeUnits", "type": "uint24" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -144,7 +144,7 @@
     "inputs": [
       { "internalType": "address", "name": "", "type": "address" },
       { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "uint16", "name": "", "type": "uint16" }
+      { "internalType": "uint24", "name": "", "type": "uint24" }
     ],
     "name": "getPool",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
@@ -172,7 +172,7 @@
       { "internalType": "address", "name": "factory", "type": "address" },
       { "internalType": "address", "name": "token0", "type": "address" },
       { "internalType": "address", "name": "token1", "type": "address" },
-      { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+      { "internalType": "uint24", "name": "swapFeeUnits", "type": "uint24" },
       { "internalType": "int24", "name": "tickDistance", "type": "int24" }
     ],
     "stateMutability": "view",
@@ -202,7 +202,7 @@
   {
     "inputs": [
       { "internalType": "address", "name": "_feeTo", "type": "address" },
-      { "internalType": "uint16", "name": "_governmentFeeBps", "type": "uint16" }
+      { "internalType": "uint24", "name": "_governmentFeeUnits", "type": "uint24" }
     ],
     "name": "updateFeeConfiguration",
     "outputs": [],
