@@ -1,0 +1,17 @@
+{
+  "network": "cronos",
+  "startBlock": "3152290",
+  "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
+  "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
+  "pricing_pools": "0x911f46012efad4371a2697761d39eb3b316c3ed1",
+  "wrapped_native_address": "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
+  "stable_coins": [
+    "0xf2001b145b43032aaf5ee2884e456ccd805f677d",
+    "0xc21223249ca28397b4b6541dffaecc539bff0c59",
+    "0x66e428c3f67a68878562e79a0234c1f83c208770"
+  ],
+  "_stable_explain": ["DAI", "USDC", "USDT"],
+  "whitelist_tokens": ["0xe44fd7fcb2b1581822d0c862b68222998a0c299a"],
+  "_whitelist_explain": ["ETH"],
+  "minimum_eth_locked": "0"
+}

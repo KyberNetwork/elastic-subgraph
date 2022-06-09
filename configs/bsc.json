@@ -1,10 +1,18 @@
 {
   "network": "bsc",
-  "startBlock": "18363403",
-  "factory_address": "0x2c059ab112eb6d4bdb6105742d560876a9fe0f54",
-  "position_manager_address": "0x96891141a71001573e925ac356174e5d3a86cbb8",
-  "pricing_pools": "0x2d0fe0ac602db6a484453992a60134e9fd636760",
+  "startBlock": "18532980",
+  "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
+  "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
+  "pricing_pools": "0xd72e3f5810bab2ffd44b0a1304711a845ce5f1e8",
   "wrapped_native_address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-  "stable_coins": "0xe9e7cea3dedca5984780bafc599bd69add087d56|0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d|0x55d398326f99059ff775485246999027b3197955|0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
-  "whitelist_tokens": "0xfe56d5892bdffc7bf58f2e84be1b2c32d21c308b|0x2170ed0880ac9a755fd29b2688956bd959f933f8"
+  "stable_coins": [
+    "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    "0x55d398326f99059ff775485246999027b3197955",
+    "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+  ],
+  "_stable_explain": ["BSD", "USDC", "USDT", "DAI"],
+  "whitelist_tokens": ["0xfe56d5892bdffc7bf58f2e84be1b2c32d21c308b", "0x2170ed0880ac9a755fd29b2688956bd959f933f8"],
+  "_whitelist_explain": ["KNC", "ETH"],
+  "minimum_eth_locked": "0"
 }

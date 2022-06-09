@@ -4,17 +4,15 @@ import { Bundle, Pool, Token } from './../types/schema'
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { exponentToBigDecimal, safeDiv } from '../utils/index'
 import { STABLE_COINS_STR, PRICING_POOL, WETH_ADDRESS, WHITELIST_TOKENS_STR } from './constants'
+import { MINIMUM_ETH_LOCKED } from './constants'
 
-let STABLE_COINS: string[] = STABLE_COINS_STR.split('|')
+let STABLE_COINS: string[] = STABLE_COINS_STR.split(',')
 
 // token where amounts should contribute to tracked volume and liquidity
 // usually tokens that many tokens are paired with s
-export let WHITELIST_TOKENS: string[] = WHITELIST_TOKENS_STR.split('|')
+export let WHITELIST_TOKENS: string[] = WHITELIST_TOKENS_STR.split(',')
   .concat(STABLE_COINS)
   .concat([WETH_ADDRESS])
-
-// TODO: refactor this. move to config
-let MINIMUM_ETH_LOCKED = BigDecimal.fromString('0')
 
 let Q192 = 2 ** 192
 export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, token1: Token): BigDecimal[] {

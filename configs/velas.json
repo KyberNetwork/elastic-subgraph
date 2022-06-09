@@ -1,0 +1,17 @@
+{
+  "network": "velas",
+  "startBlock": "40962641",
+  "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
+  "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
+  "pricing_pools": "0xfd60d3cf6863633d960cc919a19063965733f005",
+  "wrapped_native_address": "0xc579d1f3cf86749e05cd06f7ade17856c2ce3126",
+  "stable_coins": [
+    "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993",
+    "0x01445c31581c354b7338ac35693ab2001b50b9ae",
+    "0xc111c29a988ae0c0087d97b33c6e6766808a3bd3"
+  ],
+  "_stable_explain": ["USDC", "USDT", "BUSD"],
+  "whitelist_tokens": ["0x85219708c49aa701871ad330a94ea0f41dff24ca"],
+  "_whitelist_explain": ["ETH"],
+  "minimum_eth_locked": "0"
+}

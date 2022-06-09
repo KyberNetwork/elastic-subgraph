@@ -10,6 +10,9 @@ export const PRICING_POOL = '{{ pricing_pools }}'
 
 export const STABLE_COINS_STR = '{{ stable_coins }}'
 export const WHITELIST_TOKENS_STR = '{{ whitelist_tokens }}'
+const MINIMUM_ETH_LOCKED_CONFIG = '{{ minimum_eth_locked }}'
+
+export let MINIMUM_ETH_LOCKED = BigDecimal.fromString(MINIMUM_ETH_LOCKED_CONFIG)
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)

@@ -1,0 +1,17 @@
+{
+  "network": "mainnet",
+  "startBlock": "",
+  "factory_address": "",
+  "position_manager_address": "",
+  "pricing_pools": "",
+  "wrapped_native_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "stable_coins": [
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0xdac17f958d2ee523a2206206994597c13d831ec7"
+  ],
+  "_stable_explain": ["DAI", "USDC", "USDT"],
+  "whitelist_tokens": ["0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202"],
+  "_whitelist_explain": ["KNC"],
+  "minimum_eth_locked": "0"
+}

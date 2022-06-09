@@ -1,0 +1,21 @@
+{
+  "network": "matic",
+  "startBlock": "29347468",
+  "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
+  "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
+  "pricing_pools": "0x835044e5b9e54c7756f07c6607c86c4697fc9ba4",
+  "wrapped_native_address": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+  "stable_coins": [
+    "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+    "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+    "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
+  ],
+  "_stable_explain": ["DAI", "USDC", "USDT"],
+  "whitelist_tokens": [
+    "0x1c954e8fe737f99f68fa1ccda3e51ebdb291948c",
+    "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+    "0x2c89bbc92bd86f8075d1decc58c7f4e0107f286b"
+  ],
+  "_whitelist_explain": ["KNC", "WETH", "AVAX"],
+  "minimum_eth_locked": "0"
+}
