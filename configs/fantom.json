@@ -1,0 +1,17 @@
+{
+  "network": "fantom",
+  "startBlock": "40124588",
+  "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
+  "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
+  "pricing_pools": "0x1b2bfd0339454d37af70a708abc60d523a06b1b8",
+  "wrapped_native_address": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+  "stable_coins": [
+    "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+    "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+    "0x049d68029688eabf473097a2fc38ef61633a3c7a"
+  ],
+  "_stable_explain": ["DAI", "USDC", "fUSDT"],
+  "whitelist_tokens": ["0x74b23882a30290451a17c44f4f05243b6b58c76d"],
+  "_whitelist_explain": ["WETH"],
+  "minimum_eth_locked": "0"
+}

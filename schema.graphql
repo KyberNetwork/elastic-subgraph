@@ -4,9 +4,6 @@ type Factory @entity {
   # amount of pools created
   poolCount: BigInt!
 
-  # amount of pools created
-  pairCount: BigInt!
-
   # amoutn of transactions all time
   txCount: BigInt!
   # total volume all time in derived USD
@@ -76,51 +73,7 @@ type Token @entity {
   tokenDayData: [TokenDayData!]! @derivedFrom(field: "token")
 }
 
-type Pair @entity {
-  id: ID!
-  createdAtTimestamp: BigInt!
-  createdAtBlockNumber: BigInt!
-  token0: Token!
-  token1: Token!
-
-  pools: [Pool!]!
-
-  # in range liquidity
-  liquidity: BigInt!
-  feeGrowthGlobal: BigInt!
-
-  token0Price: BigDecimal!
-  token1Price: BigDecimal!
-  volumeToken0: BigDecimal!
-  volumeToken1: BigDecimal!
-  volumeUSD: BigDecimal!
-  untrackedVolumeUSD: BigDecimal!
-  feesUSD: BigDecimal!
-
-  txCount: BigInt!
-  collectedFeesToken0: BigDecimal!
-  collectedFeesToken1: BigDecimal!
-  collectedFeesUSD: BigDecimal!
-
-  totalValueLockedToken0: BigDecimal!
-  totalValueLockedToken1: BigDecimal!
-  totalValueLockedETH: BigDecimal!
-  totalValueLockedUSD: BigDecimal!
-  totalValueLockedUSDUntracked: BigDecimal!
-
-  liquidityProviderCount: BigInt! # used to detect new exchanges
-  pairHourData: [PairHourData!]! @derivedFrom(field: "pair")
-  pairDayData: [PairDayData!]! @derivedFrom(field: "pair")
-  # mints: [Mint!]! @derivedFrom(field: "pool")
-  # burns: [Burn!]! @derivedFrom(field: "pool")
-  # burnRTokens: [Burn!]! @derivedFrom(field: "pool")
-  # swaps: [Swap!]! @derivedFrom(field: "pool")
-  # collects: [Collect!]! @derivedFrom(field: "pool")
-  # ticks: [Tick!]! @derivedFrom(field: "pool")
-}
-
 type Pool @entity {
-  pair: Pair!
   # pool address
   id: ID!
   # creation
@@ -135,8 +88,13 @@ type Pool @entity {
   feeTier: BigInt!
   # in range liquidity
   liquidity: BigInt!
+  # reinvestL
+  reinvestL: BigInt!
+  reinvestLLast: BigInt!
   # current price tracker
   sqrtPrice: BigInt!
+  # tracker for global fee growth
+  totalSupply: BigInt!
   # tracker for global fee growth
   feeGrowthGlobal: BigInt!
   # tracker for secondsPerLiquidityData
@@ -191,6 +149,7 @@ type Pool @entity {
   swaps: [Swap!]! @derivedFrom(field: "pool")
   collects: [Collect!]! @derivedFrom(field: "pool")
   ticks: [Tick!]! @derivedFrom(field: "pool")
+  ranges: [Range!]! @derivedFrom(field: "pool")
 }
 
 type Tick @entity {
@@ -486,17 +445,17 @@ type Flash @entity {
   logIndex: BigInt
 }
 
-# Data accumulated and condensed into day stats for all of Uniswap
-type UniswapDayData @entity {
+# Data accumulated and condensed into day stats for all of KyberSwap
+type KyberSwapDayData @entity {
   # timestamp rounded to current day by dividing by 86400
   id: ID!
   # timestamp rounded to current day by dividing by 86400
   date: Int!
-  # total daily volume in Uniswap derived in terms of ETH
+  # total daily volume in KyberSwap derived in terms of ETH
   volumeETH: BigDecimal!
-  # total daily volume in Uniswap derived in terms of USD
+  # total daily volume in KyberSwap derived in terms of USD
   volumeUSD: BigDecimal!
-  # total daily volume in Uniswap derived in terms of USD untracked
+  # total daily volume in KyberSwap derived in terms of USD untracked
   volumeUSDUntracked: BigDecimal!
   # fees in USD
   feesUSD: BigDecimal!
@@ -505,49 +464,6 @@ type UniswapDayData @entity {
   # tvl in terms of USD
   tvlUSD: BigDecimal!
 }
-
-# Data accumulated and condensed into day stats for each pair
-type PairDayData @entity {
-  # timestamp rounded to current day by dividing by 86400
-  id: ID!
-  # timestamp rounded to current day by dividing by 86400
-  date: Int!
-  # pointer to pool
-  pair: Pair!
-  # in range liquidity at end of period
-  liquidity: BigInt!
-  # current price tracker at end of period
-  # sqrtPrice: BigInt!
-  # price of token0 - derived from sqrtPrice
-  token0Price: BigDecimal!
-  # price of token1 - derived from sqrtPrice
-  token1Price: BigDecimal!
-  # current tick at end of period
-  # tick: BigInt
-  # tracker for global fee growth
-  feeGrowthGlobal: BigInt!
-  # tvl derived in USD at end of period
-  tvlUSD: BigDecimal!
-  # volume in token0
-  volumeToken0: BigDecimal!
-  # volume in token1
-  volumeToken1: BigDecimal!
-  # volume in USD
-  volumeUSD: BigDecimal!
-  # fees in USD
-  feesUSD: BigDecimal!
-  # numebr of transactions during period
-  txCount: BigInt!
-  # opening price of token0
-  open: BigDecimal!
-  # high price of token0
-  high: BigDecimal!
-  # low price of token0
-  low: BigDecimal!
-  # close price of token0
-  close: BigDecimal!
-}
-
 
 # Data accumulated and condensed into day stats for each pool
 type PoolDayData @entity {
@@ -567,44 +483,6 @@ type PoolDayData @entity {
   token1Price: BigDecimal!
   # current tick at end of period
   tick: BigInt
-  # tracker for global fee growth
-  feeGrowthGlobal: BigInt!
-  # tvl derived in USD at end of period
-  tvlUSD: BigDecimal!
-  # volume in token0
-  volumeToken0: BigDecimal!
-  # volume in token1
-  volumeToken1: BigDecimal!
-  # volume in USD
-  volumeUSD: BigDecimal!
-  # fees in USD
-  feesUSD: BigDecimal!
-  # numebr of transactions during period
-  txCount: BigInt!
-  # opening price of token0
-  open: BigDecimal!
-  # high price of token0
-  high: BigDecimal!
-  # low price of token0
-  low: BigDecimal!
-  # close price of token0
-  close: BigDecimal!
-}
-
-# hourly stats tracker for Pair
-type PairHourData @entity {
-  # format: <pair address>-<timestamp>
-  id: ID!
-  # unix timestamp for start of hour
-  periodStartUnix: Int!
-  # pointer to pool
-  pair: Pair!
-  # in range liquidity at end of period
-  liquidity: BigInt!
-  # price of token0 - derived from sqrtPrice
-  token0Price: BigDecimal!
-  # price of token1 - derived from sqrtPrice
-  token1Price: BigDecimal!
   # tracker for global fee growth
   feeGrowthGlobal: BigInt!
   # tvl derived in USD at end of period
@@ -781,4 +659,48 @@ type TokenHourData @entity {
   low: BigDecimal!
   # close price USD
   close: BigDecimal!
+}
+
+type Range @entity {
+  id: ID!
+  # pool position is within
+  pool: Pool!
+  # allow indexing by tokens
+  token0: Token!
+  # allow indexing by tokens
+  token1: Token!
+  # lower tick of the position
+  tickLower: Tick!
+  # upper tick of the position
+  tickUpper: Tick!
+  # total position liquidity
+  liquidity: BigInt!
+}
+
+type JoinedPosition @entity {
+  id: ID!
+  pid: BigInt!
+  nftId: BigInt!
+  liquidity: BigInt!
+  pool: Pool!
+  position: Position!
+  fairLaunch: KyberFairLaunch!
+}
+
+type FarmingPool @entity {
+  id: ID!
+  pid: ID!
+  startTime: BigInt!
+  endTime: BigInt!
+  feeTarget: BigInt!
+  vestingDuration: BigInt!
+  pool: Pool!
+  fairLaunch: KyberFairLaunch!
+  rewardTokens: [Token!]!
+  totalRewardAmounts: [BigInt!]!
+}
+
+
+type KyberFairLaunch @entity {
+  id: ID!
 }

@@ -1,0 +1,13 @@
+{
+  "network": "aurora",
+  "startBlock": "",
+  "factory_address": "",
+  "position_manager_address": "",
+  "pricing_pools": "",
+  "wrapped_native_address": "0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb",
+  "stable_coins": ["", "", ""],
+  "_stable_explain": ["DAI", "USDC", "USDT"],
+  "whitelist_tokens": [""],
+  "_whitelist_explain": [""],
+  "minimum_eth_locked": "0"
+}

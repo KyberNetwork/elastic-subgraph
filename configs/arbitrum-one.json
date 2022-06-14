@@ -1,0 +1,17 @@
+{
+  "network": "arbitrum-one",
+  "startBlock": "14137735",
+  "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
+  "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
+  "pricing_pools": "0xc7ff48e5a7e6a14bc4d7dca1c3e4b38321121d0b",
+  "wrapped_native_address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+  "stable_coins": [
+    "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+    "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+    "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+  ],
+  "_stable_explain": ["USDC", "DAI_e", "USDT"],
+  "whitelist_tokens": ["0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"],
+  "_whitelist_explain": ["WBTC"],
+  "minimum_eth_locked": "0"
+}

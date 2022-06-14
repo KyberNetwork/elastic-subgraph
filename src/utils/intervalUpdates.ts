@@ -1,7 +1,7 @@
 import { ZERO_BD, ZERO_BI, ONE_BI } from './constants'
 /* eslint-disable prefer-const */
 import {
-  UniswapDayData,
+  KyberSwapDayData,
   Factory,
   Pool,
   PoolDayData,
@@ -11,10 +11,7 @@ import {
   Bundle,
   PoolHourData,
   TickDayData,
-  Tick,
-  PairDayData,
-  Pair,
-  PairHourData
+  Tick
 } from './../types/schema'
 import { FACTORY_ADDRESS } from './constants'
 import { ethereum } from '@graphprotocol/graph-ts'
@@ -23,111 +20,24 @@ import { ethereum } from '@graphprotocol/graph-ts'
  * Tracks global aggregate data over daily windows
  * @param event
  */
-export function updateUniswapDayData(event: ethereum.Event): UniswapDayData {
-  let uniswap = Factory.load(FACTORY_ADDRESS)
+export function updateKyberSwapDayData(event: ethereum.Event): KyberSwapDayData {
+  let factory = Factory.load(FACTORY_ADDRESS)
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400 // rounded
   let dayStartTimestamp = dayID * 86400
-  let uniswapDayData = UniswapDayData.load(dayID.toString())
-  if (uniswapDayData === null) {
-    uniswapDayData = new UniswapDayData(dayID.toString())
-    uniswapDayData.date = dayStartTimestamp
-    uniswapDayData.volumeETH = ZERO_BD
-    uniswapDayData.volumeUSD = ZERO_BD
-    uniswapDayData.volumeUSDUntracked = ZERO_BD
-    uniswapDayData.feesUSD = ZERO_BD
+  let kyberSwapDayData = KyberSwapDayData.load(dayID.toString())
+  if (kyberSwapDayData === null) {
+    kyberSwapDayData = new KyberSwapDayData(dayID.toString())
+    kyberSwapDayData.date = dayStartTimestamp
+    kyberSwapDayData.volumeETH = ZERO_BD
+    kyberSwapDayData.volumeUSD = ZERO_BD
+    kyberSwapDayData.volumeUSDUntracked = ZERO_BD
+    kyberSwapDayData.feesUSD = ZERO_BD
   }
-  uniswapDayData.tvlUSD = uniswap.totalValueLockedUSD
-  uniswapDayData.txCount = uniswap.txCount
-  uniswapDayData.save()
-  return uniswapDayData as UniswapDayData
-}
-
-export function updatePairDayData(event: ethereum.Event, pairId: string): PairDayData {
-  let timestamp = event.block.timestamp.toI32()
-  let dayID = timestamp / 86400
-  let dayStartTimestamp = dayID * 86400
-  let dayPairID = pairId.concat('-').concat(dayID.toString())
-  let pair = Pair.load(pairId)
-  let pairDayData = PairDayData.load(dayPairID)
-  if (pairDayData === null) {
-    pairDayData = new PairDayData(dayPairID)
-    pairDayData.date = dayStartTimestamp
-    pairDayData.pair = pair.id
-    // things that dont get initialized always
-    pairDayData.volumeToken0 = ZERO_BD
-    pairDayData.volumeToken1 = ZERO_BD
-    pairDayData.volumeUSD = ZERO_BD
-    pairDayData.feesUSD = ZERO_BD
-    pairDayData.txCount = ZERO_BI
-    pairDayData.feeGrowthGlobal = ZERO_BI
-    pairDayData.open = pair.token0Price
-    pairDayData.high = pair.token0Price
-    pairDayData.low = pair.token0Price
-    pairDayData.close = pair.token0Price
-  }
-
-  if (pair.token0Price.gt(pairDayData.high)) {
-    pairDayData.high = pair.token0Price
-  }
-  if (pair.token0Price.lt(pairDayData.low)) {
-    pairDayData.low = pair.token0Price
-  }
-
-  pairDayData.liquidity = pair.liquidity
-  pairDayData.feeGrowthGlobal = pair.feeGrowthGlobal
-  pairDayData.token0Price = pair.token0Price
-  pairDayData.token1Price = pair.token1Price
-  // pairDayData.tick = pool.tick
-  pairDayData.tvlUSD = pair.totalValueLockedUSD
-  pairDayData.txCount = pairDayData.txCount.plus(ONE_BI)
-  pairDayData.save()
-
-  return pairDayData as PairDayData
-}
-
-export function updatePairHourData(event: ethereum.Event, pairId: string): PairHourData {
-  let timestamp = event.block.timestamp.toI32()
-  let hourIndex = timestamp / 3600 // get unique hour within unix history
-  let hourStartUnix = hourIndex * 3600 // want the rounded effect
-  let hourPairID = pairId.concat('-').concat(hourIndex.toString())
-  let pair = Pair.load(pairId)
-  let pairHourData = PairHourData.load(hourPairID)
-  if (pairHourData === null) {
-    pairHourData = new PairHourData(hourPairID)
-    pairHourData.periodStartUnix = hourStartUnix
-    pairHourData.pair = pair.id
-    // things that dont get initialized always
-    pairHourData.volumeToken0 = ZERO_BD
-    pairHourData.volumeToken1 = ZERO_BD
-    pairHourData.volumeUSD = ZERO_BD
-    pairHourData.txCount = ZERO_BI
-    pairHourData.feesUSD = ZERO_BD
-    pairHourData.feeGrowthGlobal = ZERO_BI
-    pairHourData.open = pair.token0Price
-    pairHourData.high = pair.token0Price
-    pairHourData.low = pair.token0Price
-    pairHourData.close = pair.token0Price
-  }
-
-  if (pair.token0Price.gt(pairHourData.high)) {
-    pairHourData.high = pair.token0Price
-  }
-  if (pair.token0Price.lt(pairHourData.low)) {
-    pairHourData.low = pair.token0Price
-  }
-
-  pairHourData.liquidity = pair.liquidity
-  pairHourData.token0Price = pair.token0Price
-  pairHourData.token1Price = pair.token1Price
-  pairHourData.feeGrowthGlobal = pair.feeGrowthGlobal
-  pairHourData.close = pair.token0Price
-  pairHourData.tvlUSD = pair.totalValueLockedUSD
-  pairHourData.txCount = pairHourData.txCount.plus(ONE_BI)
-  pairHourData.save()
-
-  // test
-  return pairHourData as PairHourData
+  kyberSwapDayData.tvlUSD = factory.totalValueLockedUSD
+  kyberSwapDayData.txCount = factory.txCount
+  kyberSwapDayData.save()
+  return kyberSwapDayData as KyberSwapDayData
 }
 
 export function updatePoolDayData(event: ethereum.Event): PoolDayData {
