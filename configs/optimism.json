@@ -1,0 +1,19 @@
+{
+  "network": "optimism",
+  "startBlock": "12001267",
+  "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
+  "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
+  "pricing_pools": "0x81e2f9ed2b784b978050b7085c36e662458dd225",
+  "wrapped_native_address": "0x4200000000000000000000000000000000000006",
+  "stable_coins": [
+    "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+    "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+    "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58"
+  ],
+  "_stable_comment": ["DAI", "USDC", "USDT"],
+  "whitelist_tokens": [
+    "0x4200000000000000000000000000000000000042"
+  ],
+  "_whitelist_comment": ["OP"],
+  "minimum_eth_locked": "0"
+}
