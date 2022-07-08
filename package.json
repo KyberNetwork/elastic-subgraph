@@ -13,7 +13,7 @@
     "create-kyber": "graph create kybernetwork/kyberswap-elastic-${NETWORK}  --node https://${NETWORK}-graph.kyberengineering.io/admin",
     "deploy-kyber": "graph deploy --product hosted-service kybernetwork/kyberswap-elastic-${NETWORK} --debug --ipfs https://${NETWORK}-graph.kyberengineering.io/ipfs --node https://${NETWORK}-graph.kyberengineering.io/admin",
     "deploy-rinkeby": "graph deploy --product hosted-service viet-nv/promm-rinkeby --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
-    "deploy-bsc-test": "graph deploy --product hosted-service viet-nv/promm-bsc-testnet --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
+    "deploy-vietnv": "graph deploy --product hosted-service viet-nv/kyberswap-elastic --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-ropsten": "graph deploy --product hosted-service viet-nv/promm-ropsten --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-bsc": "graph deploy --product hosted-service viet-nv/kyberswap-elastic --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "watch-local": "graph deploy viet-nv/promm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001"

@@ -5,11 +5,11 @@ import { Factory as FactoryContract } from '../types/templates/Pool/Factory'
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a'
 
-export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-export const PRICING_POOL = '0x7d697d789ee19bc376474e0167bade9535a28cf4'
+export const WETH_ADDRESS = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+export const PRICING_POOL = '0xd72e3f5810bab2ffd44b0a1304711a845ce5f1e8'
 
-export const STABLE_COINS_STR = '0x6b175474e89094c44da98b954eedeac495271d0f,0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48,0xdac17f958d2ee523a2206206994597c13d831ec7'
-export const WHITELIST_TOKENS_STR = '0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202'
+export const STABLE_COINS_STR = '0xe9e7cea3dedca5984780bafc599bd69add087d56,0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d,0x55d398326f99059ff775485246999027b3197955,0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3'
+export const WHITELIST_TOKENS_STR = '0xfe56d5892bdffc7bf58f2e84be1b2c32d21c308b,0x2170ed0880ac9a755fd29b2688956bd959f933f8'
 const MINIMUM_ETH_LOCKED_CONFIG = '0'
 
 export let MINIMUM_ETH_LOCKED = BigDecimal.fromString(MINIMUM_ETH_LOCKED_CONFIG)

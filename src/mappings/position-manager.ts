@@ -7,25 +7,10 @@ import {
   Transfer,
   MintPosition
 } from '../types/AntiSnipAttackPositionManager/AntiSnipAttackPositionManager'
-import { Bundle, Position, PositionSnapshot, Token, Range } from '../types/schema'
-import { ADDRESS_ZERO, factoryContract, ZERO_BD, ZERO_BI } from '../utils/constants'
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
-import { convertTokenToDecimal, loadTransaction } from '../utils'
-
-function getRange(position: Position): Range {
-  let range = Range.load(position.pool + '_' + position.tickLower + '_' + position.tickUpper)
-  if (!range) {
-    range = new Range(position.pool + '_' + position.tickLower + '_' + position.tickUpper)
-    range.liquidity = ZERO_BI
-    range.tickLower = position.tickLower
-    range.tickUpper = position.tickUpper
-    range.token0 = position.token0
-    range.token1 = position.token1
-    range.pool = position.pool
-  }
-
-  return range as Range
-}
+import { Position, PositionSnapshot, Pool } from '../types/schema'
+import { ADDRESS_ZERO, factoryContract, ZERO_BI, ONE_BI } from '../utils/constants'
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { loadTransaction } from '../utils'
 
 function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
   let position = Position.load(tokenId.toString())
@@ -49,23 +34,18 @@ function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
       // The owner gets correctly updated in the Transfer handler
       position.owner = Address.fromString(ADDRESS_ZERO)
       position.pool = poolAddress.toHexString()
+
+      let pool = Pool.load(poolAddress.toHexString())
+      pool.positionCount = pool.positionCount.plus(ONE_BI)
+      pool.save()
+
       position.token0 = positionResult.value1.token0.toHexString()
       position.token1 = positionResult.value1.token1.toHexString()
       position.tickLower = position.pool.concat('#').concat(BigInt.fromI32(positionResult.value0.tickLower).toString())
       position.tickUpper = position.pool.concat('#').concat(BigInt.fromI32(positionResult.value0.tickUpper).toString())
       position.liquidity = ZERO_BI
-      position.depositedToken0 = ZERO_BD
-      position.depositedToken1 = ZERO_BD
-      position.withdrawnToken0 = ZERO_BD
-      position.withdrawnToken1 = ZERO_BD
-      position.collectedFeesToken0 = ZERO_BD
-      position.collectedFeesToken1 = ZERO_BD
       position.transaction = loadTransaction(event).id
       position.feeGrowthInsideLast = positionResult.value0.feeGrowthInsideLast
-
-      position.amountDepositedUSD = ZERO_BD
-      position.amountWithdrawnUSD = ZERO_BD
-      position.amountCollectedUSD = ZERO_BD
     }
   }
 
@@ -89,12 +69,6 @@ function savePositionSnapshot(position: Position, event: ethereum.Event): void {
   positionSnapshot.blockNumber = event.block.number
   positionSnapshot.timestamp = event.block.timestamp
   positionSnapshot.liquidity = position.liquidity
-  positionSnapshot.depositedToken0 = position.depositedToken0
-  positionSnapshot.depositedToken1 = position.depositedToken1
-  positionSnapshot.withdrawnToken0 = position.withdrawnToken0
-  positionSnapshot.withdrawnToken1 = position.withdrawnToken1
-  positionSnapshot.collectedFeesToken0 = position.collectedFeesToken0
-  positionSnapshot.collectedFeesToken1 = position.collectedFeesToken1
   positionSnapshot.transaction = loadTransaction(event).id
   positionSnapshot.feeGrowthInsideLast = position.feeGrowthInsideLast
   positionSnapshot.save()
@@ -107,30 +81,11 @@ export function handleMintPosition(event: MintPosition): void {
     return
   }
 
-  let bundle = Bundle.load('1')
-
-  let token0 = Token.load(position.token0)
-  let token1 = Token.load(position.token1)
-
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
-
   position.liquidity = position.liquidity.plus(event.params.liquidity)
-  position.depositedToken0 = position.depositedToken0.plus(amount0)
-  position.depositedToken1 = position.depositedToken1.plus(amount1)
-
-  let newDepositUSD = amount0
-    .times(token0.derivedETH.times(bundle.ethPriceUSD))
-    .plus(amount1.times(token1.derivedETH.times(bundle.ethPriceUSD)))
-  position.amountDepositedUSD = position.amountDepositedUSD.plus(newDepositUSD)
 
   updateFeeVars(position!, event, event.params.tokenId)
 
   position.save()
-
-  let range = getRange(position as Position)
-  range.liquidity = range.liquidity.plus(event.params.liquidity)
-  range.save()
 
   savePositionSnapshot(position!, event)
 }
@@ -143,30 +98,11 @@ export function handleIncreaseLiquidity(event: AddLiquidity): void {
     return
   }
 
-  let bundle = Bundle.load('1')
-
-  let token0 = Token.load(position.token0)
-  let token1 = Token.load(position.token1)
-
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
-
   position.liquidity = position.liquidity.plus(event.params.liquidity)
-  position.depositedToken0 = position.depositedToken0.plus(amount0)
-  position.depositedToken1 = position.depositedToken1.plus(amount1)
-
-  let newDepositUSD = amount0
-    .times(token0.derivedETH.times(bundle.ethPriceUSD))
-    .plus(amount1.times(token1.derivedETH.times(bundle.ethPriceUSD)))
-  position.amountDepositedUSD = position.amountDepositedUSD.plus(newDepositUSD)
 
   updateFeeVars(position!, event, event.params.tokenId)
 
   position.save()
-
-  let range = getRange(position as Position)
-  range.liquidity = range.liquidity.plus(event.params.liquidity)
-  range.save()
 
   savePositionSnapshot(position!, event)
 }
@@ -179,61 +115,18 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
     return
   }
 
-  let bundle = Bundle.load('1')
-  let token0 = Token.load(position.token0)
-  let token1 = Token.load(position.token1)
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
-
   position.liquidity = position.liquidity.minus(event.params.liquidity)
-  position.withdrawnToken0 = position.withdrawnToken0.plus(amount0)
-  position.withdrawnToken1 = position.withdrawnToken1.plus(amount1)
 
-  let newWithdrawUSD = amount0
-    .times(token0.derivedETH.times(bundle.ethPriceUSD))
-    .plus(amount1.times(token1.derivedETH.times(bundle.ethPriceUSD)))
-  position.amountWithdrawnUSD = position.amountWithdrawnUSD.plus(newWithdrawUSD)
-
+  let pool = Pool.load(position.pool)
+  if (position.liquidity.equals(ZERO_BI)) {
+    pool.closedPostionCount = pool.closedPostionCount.plus(ONE_BI)
+    pool.save()
+  }
   position = updateFeeVars(position!, event, event.params.tokenId)
   position.save()
 
-  let range = getRange(position as Position)
-  range.liquidity = range.liquidity.minus(event.params.liquidity)
-  range.save()
-
   savePositionSnapshot(position!, event)
 }
-
-// export function handleCollect(event: Collect): void {
-//   let position = getPosition(event, event.params.tokenId)
-//   // position was not able to be fetched
-//   if (position == null) {
-//     return
-//   }
-//   if (Address.fromString(position.pool).equals(Address.fromHexString('0x8fe8d9bb8eeba3ed688069c3d6b556c9ca258248'))) {
-//     return
-//   }
-
-//   let bundle = Bundle.load('1')
-//   let token0 = Token.load(position.token0)
-//   let token1 = Token.load(position.token1)
-//   let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-//   let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
-//   position.collectedToken0 = position.collectedToken0.plus(amount0)
-//   position.collectedToken1 = position.collectedToken1.plus(amount1)
-
-//   position.collectedFeesToken0 = position.collectedToken0.minus(position.withdrawnToken0)
-//   position.collectedFeesToken1 = position.collectedToken1.minus(position.withdrawnToken1)
-
-//   let newCollectUSD = amount0
-//     .times(token0.derivedETH.times(bundle.ethPriceUSD))
-//     .plus(amount1.times(token1.derivedETH.times(bundle.ethPriceUSD)))
-//   position.amountCollectedUSD = position.amountCollectedUSD.plus(newCollectUSD)
-
-//   position = updateFeeVars(position!, event, event.params.tokenId)
-//   position.save()
-//   savePositionSnapshot(position!, event)
-// }
 
 export function handleTransfer(event: Transfer): void {
   let position = getPosition(event, event.params.tokenId)
