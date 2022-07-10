@@ -149,7 +149,9 @@ type Pool @entity {
   swaps: [Swap!]! @derivedFrom(field: "pool")
   collects: [Collect!]! @derivedFrom(field: "pool")
   ticks: [Tick!]! @derivedFrom(field: "pool")
-  ranges: [Range!]! @derivedFrom(field: "pool")
+  positionCount: BigInt!
+  closedPostionCount: BigInt!
+  positions: [Position!]! @derivedFrom(field: "pool")
 }
 
 type Tick @entity {
@@ -216,24 +218,6 @@ type Position @entity {
   tickUpper: Tick!
   # total position liquidity
   liquidity: BigInt!
-  # amount of token 0 ever deposited to position
-  depositedToken0: BigDecimal!
-  # amount of token 1 ever deposited to position
-  depositedToken1: BigDecimal!
-  # amount of token 0 ever withdrawn from position (without fees)
-  withdrawnToken0: BigDecimal!
-  # amount of token 1 ever withdrawn from position (without fees)
-  withdrawnToken1: BigDecimal!
-  # all time collected fees in token0
-  collectedFeesToken0: BigDecimal!
-  # all time collected fees in token1
-  collectedFeesToken1: BigDecimal!
-  # Total amount deposited in terms of USD
-  amountDepositedUSD: BigDecimal!
-  # Total amount withdrawn in terms of USD
-  amountWithdrawnUSD: BigDecimal!
-  # Total amount collected in terms of USD
-  amountCollectedUSD: BigDecimal!
   # tx in which the position was initialized
   transaction: Transaction!
   # vars needed for fee computation
@@ -255,18 +239,6 @@ type PositionSnapshot @entity {
   timestamp: BigInt!
   # total position liquidity
   liquidity: BigInt!
-  # amount of token 0 ever deposited to position
-  depositedToken0: BigDecimal!
-  # amount of token 1 ever deposited to position
-  depositedToken1: BigDecimal!
-  # amount of token 0 ever withdrawn from position (without fees)
-  withdrawnToken0: BigDecimal!
-  # amount of token 1 ever withdrawn from position (without fees)
-  withdrawnToken1: BigDecimal!
-  # all time collected fees in token0
-  collectedFeesToken0: BigDecimal!
-  # all time collected fees in token1
-  collectedFeesToken1: BigDecimal!
   # tx in which the snapshot was initialized
   transaction: Transaction!
   # internal vars needed for fee computation
@@ -659,22 +631,6 @@ type TokenHourData @entity {
   low: BigDecimal!
   # close price USD
   close: BigDecimal!
-}
-
-type Range @entity {
-  id: ID!
-  # pool position is within
-  pool: Pool!
-  # allow indexing by tokens
-  token0: Token!
-  # allow indexing by tokens
-  token1: Token!
-  # lower tick of the position
-  tickLower: Tick!
-  # upper tick of the position
-  tickUpper: Tick!
-  # total position liquidity
-  liquidity: BigInt!
 }
 
 type JoinedPosition @entity {
