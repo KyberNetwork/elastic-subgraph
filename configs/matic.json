@@ -17,5 +17,9 @@
     "0x2c89bbc92bd86f8075d1decc58c7f4e0107f286b"
   ],
   "_whitelist_explain": ["KNC", "WETH", "AVAX"],
-  "minimum_eth_locked": "0"
+  "minimum_eth_locked": "500",
+  "reward_locker": {
+    "address": "0x10f6fb1a8b495a972bdce5bf86f2969f64359b00",
+    "startBlock": "31548958"
+  }
 }
