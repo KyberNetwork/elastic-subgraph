@@ -4,7 +4,7 @@
   "repository": "https://github.com/kyberNetwork/promm-subgraph",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "prepare": "mustache configs/${NETWORK:-rinkeby}.json subgraph.template.yaml > subgraph.yaml && mustache configs/${NETWORK:-rinkeby}.json src/utils/constants.template.ts > src/utils/constants.ts",
+    "prepare": "mustache configs/${NETWORK}.json subgraph.template.yaml > subgraph.yaml && mustache configs/${NETWORK}.json src/utils/constants.template.ts > src/utils/constants.ts",
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
     "create-local": "graph create viet-nv/promm --node http://127.0.0.1:8020",

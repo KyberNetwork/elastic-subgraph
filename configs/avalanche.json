@@ -18,5 +18,5 @@
     "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be"
   ],
   "_whitelist_explain": ["WETH.e", "KNC", "sAvax"],
-  "minimum_eth_locked": "0"
+  "minimum_eth_locked": "10"
 }

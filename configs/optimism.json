@@ -11,9 +11,7 @@
     "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58"
   ],
   "_stable_comment": ["DAI", "USDC", "USDT"],
-  "whitelist_tokens": [
-    "0x4200000000000000000000000000000000000042"
-  ],
+  "whitelist_tokens": ["0x4200000000000000000000000000000000000042"],
   "_whitelist_comment": ["OP"],
-  "minimum_eth_locked": "0"
+  "minimum_eth_locked": "0.5"
 }

@@ -14,5 +14,5 @@
   "_stable_explain": ["BSD", "USDC", "USDT", "DAI"],
   "whitelist_tokens": ["0xfe56d5892bdffc7bf58f2e84be1b2c32d21c308b", "0x2170ed0880ac9a755fd29b2688956bd959f933f8"],
   "_whitelist_explain": ["KNC", "ETH"],
-  "minimum_eth_locked": "0"
+  "minimum_eth_locked": "2"
 }

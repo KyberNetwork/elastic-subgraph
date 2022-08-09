@@ -40,5 +40,5 @@
     "KNC_b",
     "USDD_t"
   ],
-  "minimum_eth_locked": "0"
+  "minimum_eth_locked": "10000000"
 }
