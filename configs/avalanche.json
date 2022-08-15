@@ -18,5 +18,9 @@
     "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be"
   ],
   "_whitelist_explain": ["WETH.e", "KNC", "sAvax"],
-  "minimum_eth_locked": "10"
+  "minimum_eth_locked": "10",
+  "reward_locker": {
+    "address": "0x226314996cdfa694a196ef5e3d9a26b35bb40eca",
+    "startBlock": "18533864"
+  }
 }

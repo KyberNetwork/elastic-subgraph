@@ -13,5 +13,9 @@
   "_stable_explain": ["USDC", "DAI_e", "USDT"],
   "whitelist_tokens": ["0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"],
   "_whitelist_explain": ["WBTC"],
-  "minimum_eth_locked": "0.5"
+  "minimum_eth_locked": "0.5",
+  "reward_locker": {
+    "address": "0x226314996cdfa694a196ef5e3d9a26b35bb40eca",
+    "startBlock": "20063531"
+  }
 }
