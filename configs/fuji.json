@@ -1,22 +1,13 @@
 {
   "network": "fuji",
   "startBlock": "12351428",
-  "factory_address": "0x6992a3c0613485644a634Bfe22Ea97B04F0916aa",
-  "position_manager_address": "0x0C1f1B3608C10DD4E95EBca5a776f004B7EDFdb2",
-  "pricing_pools": "",
-  "wrapped_native_address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-  "stable_coins": [
-    "0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
-    "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
-    "0xc7198437980c041c805a1edcba50c1ce5db95118",
-    "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7"
-  ],
-  "_stable_explain": ["DAI.e", "USDC.e", "USDT.e", "USDt"],
-  "whitelist_tokens": [
-    "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
-    "0x39fc9e94caeacb435842fadedecb783589f50f5f",
-    "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be"
-  ],
-  "_whitelist_explain": ["WETH.e", "KNC", "sAvax"],
-  "minimum_eth_locked": "10"
+  "factory_address": "0x6992a3c0613485644a634bfe22ea97b04f0916aa",
+  "position_manager_address": "0x0c1f1b3608c10dd4e95ebca5a776f004b7edfdb2",
+  "pricing_pools": "0x29e2cbd47ca49d003627233cf913bb3965a0c9a7",
+  "wrapped_native_address": "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3",
+  "stable_coins": ["0x42296280d753ecdfafe9dbdfa912c9e6221a4e05"],
+  "_stable_explain": ["USDT"],
+  "whitelist_tokens": [],
+  "_whitelist_explain": [],
+  "minimum_eth_locked": "0"
 }
