@@ -1,0 +1,13 @@
+{
+  "network": "fuji",
+  "startBlock": "12351428",
+  "factory_address": "0x6992a3c0613485644a634bfe22ea97b04f0916aa",
+  "position_manager_address": "0x0c1f1b3608c10dd4e95ebca5a776f004b7edfdb2",
+  "pricing_pools": "0x29e2cbd47ca49d003627233cf913bb3965a0c9a7",
+  "wrapped_native_address": "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3",
+  "stable_coins": ["0x42296280d753ecdfafe9dbdfa912c9e6221a4e05"],
+  "_stable_explain": ["USDT"],
+  "whitelist_tokens": [],
+  "_whitelist_explain": [],
+  "minimum_eth_locked": "0"
+}
