@@ -513,6 +513,7 @@ export function handleSwap(event: SwapEvent): void {
   swap.tick = BigInt.fromI32(event.params.currentTick)
   swap.sqrtPriceX96 = event.params.sqrtP
   swap.logIndex = event.logIndex
+  swap.feeUSD = feesUSD
 
   // update fee growth
   // let poolContract = PoolABI.bind(event.address)
