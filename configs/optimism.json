@@ -13,5 +13,9 @@
   "_stable_comment": ["DAI", "USDC", "USDT"],
   "whitelist_tokens": ["0x4200000000000000000000000000000000000042"],
   "_whitelist_comment": ["OP"],
-  "minimum_eth_locked": "0.5"
+  "minimum_eth_locked": "0.5",
+  "reward_locker": {
+    "address": "0x10f6fb1a8b495a972bdce5bf86f2969f64359b00",
+    "startBlock": "22101471"
+  }
 }
