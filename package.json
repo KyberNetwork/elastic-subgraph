@@ -19,7 +19,8 @@
     "deploy-vietnv-eth": "graph deploy --product hosted-service viet-nv/kyberswap-elastic-ethereum --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-vietnv-matic": "graph deploy --product hosted-service viet-nv/kyberswap-elastic-matic --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-fuji": "graph deploy --product hosted-service viet-nv/elastic-fuji --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
-    "watch-local": "graph deploy viet-nv/promm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001"
+    "watch-local": "graph deploy viet-nv/promm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",
+    "auth": "graph auth --product hosted-service ${DEPLOY_KEY}"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.21.1",
