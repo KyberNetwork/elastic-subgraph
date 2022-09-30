@@ -634,13 +634,15 @@ type TokenHourData @entity {
 }
 
 type Farm @entity {
-  id: ID!
+  id: ID! # farm contract address
+  rewardLocker: String!
   farmingPools: [FarmingPool!]! @derivedFrom(field: "farm")
+  depostedPositions: [DepositedPosition!]! @derivedFrom(field: "farm")
 }
 
 
 type FarmingPool @entity {
-  id: ID!
+  id: ID! # [farm_contract]_[pid]
   farm: Farm!
   pid: BigInt!
   startTime: BigInt!
@@ -650,18 +652,19 @@ type FarmingPool @entity {
   pool: Pool!
   rewardTokens: [Token!]!
   totalRewardAmounts: [BigInt!]!
+  joinedPositions: [JoinedPosition!]! @derivedFrom(field: "farmingPool")
 }
 
 # Aggregate event, deleted when withdraw
 type DepositedPosition @entity {
-  id: ID!
+  id: ID! # [nftId]
   user: Bytes!
   farm: Farm!
   position: Position!
 }
 
 type JoinedPosition @entity {
-  id: ID!
+  id: ID! #[farm_contract]_[pid]_[nftId]
   user: Bytes! # owner of nft
   pid: BigInt!
   liquidity: BigInt!

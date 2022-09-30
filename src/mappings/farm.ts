@@ -58,6 +58,8 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
   KyberFairLaunchTemplate.create(event.params.rewardContract)
   //init reward contract
   fairLaunch = new Farm(event.params.rewardContract.toHex())
+  log.debug('locker: {}', [event.address.toHexString()])
+  fairLaunch.rewardLocker = event.address.toHexString()
   fairLaunch.save()
 
   // get pool
@@ -169,7 +171,7 @@ export function handleSync(event: SyncLiq): void {
 
 export function handleExit(event: Exit): void {
   let joinedPosition = JoinedPosition.load(
-    event.address.toHexString() + '_' + event.params.pId.toString() + '_' + event.params.pId.toString()
+    event.address.toHexString() + '_' + event.params.pId.toString() + '_' + event.params.nftId.toString()
   )
 
   if (joinedPosition === null) {
@@ -198,4 +200,17 @@ export function handleWithdraw(event: Withdraw): void {
   if (depostedPosition) {
     store.remove('DepositedPosition', depostedPosition.id)
   }
+}
+
+export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
+  handleWithdraw(event as Withdraw)
+
+  // TODO: remove joinedPositions when EmergencyWithdraw
+  // let farm = Farm.load(event.address.toHexString())
+  // farm.farmingPools.forEach(pool => {
+  //   let joinedPositions = JoinedPosition.load(pool.toString() + '_' + event.params.nftId.toString())
+  //   if (joinedPositions) {
+  //     store.remove('JoinedPosition', pool.toString() + '_' + event.params.nftId.toString())
+  //   }
+  // })
 }

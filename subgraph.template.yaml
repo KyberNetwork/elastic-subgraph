@@ -176,5 +176,5 @@ templates:
         - event: Withdraw(address,indexed uint256)
           handler: handleWithdraw
         - event: EmergencyWithdraw(address,indexed uint256)
-          handler: handleWithdraw
+          handler: handleEmergencyWithdraw
   {{/reward_locker}}
