@@ -7,7 +7,7 @@ import {
   Transfer,
   MintPosition
 } from '../types/AntiSnipAttackPositionManager/AntiSnipAttackPositionManager'
-import { Position, PositionSnapshot, Pool } from '../types/schema'
+import { Position, PositionSnapshot, Pool, ContractEvent } from '../types/schema'
 import { ADDRESS_ZERO, factoryContract, ZERO_BI, ONE_BI } from '../utils/constants'
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { loadTransaction } from '../utils'
@@ -85,6 +85,12 @@ export function handleMintPosition(event: MintPosition): void {
 
   updateFeeVars(position!, event, event.params.tokenId)
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "MintPosition"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
   position.save()
 
   savePositionSnapshot(position!, event)
@@ -102,6 +108,12 @@ export function handleIncreaseLiquidity(event: AddLiquidity): void {
 
   updateFeeVars(position!, event, event.params.tokenId)
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "IncreaseLiquidity"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
   position.save()
 
   savePositionSnapshot(position!, event)
@@ -123,6 +135,12 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
     pool.save()
   }
   position = updateFeeVars(position!, event, event.params.tokenId)
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "DecreaseLiquidity"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
   position.save()
 
   savePositionSnapshot(position!, event)
@@ -137,6 +155,12 @@ export function handleTransfer(event: Transfer): void {
   }
 
   position.owner = event.params.to
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Transfer"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
   position.save()
 
   savePositionSnapshot(position!, event)

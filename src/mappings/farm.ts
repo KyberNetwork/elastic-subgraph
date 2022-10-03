@@ -6,7 +6,7 @@ import {
   Exit,
   KyberFairLaunch as KyberFairLaunchContract
 } from '../types/templates/KyberFairLaunch/KyberFairLaunch'
-import { KyberFairLaunch, JoinedPosition, FarmingPool, Token } from '../types/schema'
+import { KyberFairLaunch, JoinedPosition, FarmingPool, Token, ContractEvent } from '../types/schema'
 import { KyberFairLaunch as KyberFairLaunchTemplate } from '../types/templates'
 import { ZERO_BI, ADDRESS_ZERO, WETH_ADDRESS, ZERO_BD } from '../utils/constants'
 import { BigInt, log, Address } from '@graphprotocol/graph-ts'
@@ -81,6 +81,12 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     })
 
     farmingPool.totalRewardAmounts = poolInfo.value8
+    // note event info
+    let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+    ev.logIndex = event.logIndex
+    ev.name = "RewardContractAdded"
+    ev.transaction= event.transaction.hash.toHex()
+    ev.save()
     farmingPool.save()
   }
 }
@@ -100,6 +106,13 @@ export function handleAddPool(event: AddPool): void {
   farmingPool.fairLaunch = event.address.toHexString()
   farmingPool.rewardTokens = poolInfo.value7.map<string>(item => getToken(item))
   farmingPool.totalRewardAmounts = poolInfo.value8
+
+// note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "AddPool"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
   farmingPool.save()
 }
 
@@ -121,6 +134,12 @@ export function handleRenewPool(event: RenewPool): void {
   farmingPool.rewardTokens = poolInfo.value7.map<string>(item => getToken(item))
 
   farmingPool.totalRewardAmounts = poolInfo.value8
+// note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "RenewPool"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
   farmingPool.save()
 }
 
@@ -145,6 +164,12 @@ export function handleJoin(event: Join): void {
   joinedPosition.position = event.params.nftId.toString()
   joinedPosition.fairLaunch = event.address.toHexString()
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Join"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
   joinedPosition.save()
 }
 
@@ -158,5 +183,13 @@ export function handleExit(event: Exit): void {
   }
 
   joinedPosition.liquidity = ZERO_BI
+
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Exit"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.save()
+
   joinedPosition.save()
 }
