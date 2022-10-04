@@ -147,6 +147,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   ev.logIndex = event.logIndex
   ev.name = "PoolCreated"
   ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
   ev.save()
 
   pool.save()

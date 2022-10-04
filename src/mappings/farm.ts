@@ -86,6 +86,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     ev.logIndex = event.logIndex
     ev.name = "RewardContractAdded"
     ev.transaction= event.transaction.hash.toHex()
+    ev.address = event.address.toHexString()
     ev.save()
     farmingPool.save()
   }
@@ -112,6 +113,7 @@ export function handleAddPool(event: AddPool): void {
   ev.logIndex = event.logIndex
   ev.name = "AddPool"
   ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
   ev.save()
   farmingPool.save()
 }
@@ -139,6 +141,7 @@ export function handleRenewPool(event: RenewPool): void {
   ev.logIndex = event.logIndex
   ev.name = "RenewPool"
   ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
   ev.save()
   farmingPool.save()
 }
@@ -169,6 +172,7 @@ export function handleJoin(event: Join): void {
   ev.logIndex = event.logIndex
   ev.name = "Join"
   ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
   ev.save()
   joinedPosition.save()
 }
@@ -189,6 +193,7 @@ export function handleExit(event: Exit): void {
   ev.logIndex = event.logIndex
   ev.name = "Exit"
   ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
   ev.save()
 
   joinedPosition.save()

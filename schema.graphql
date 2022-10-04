@@ -661,6 +661,7 @@ type ContractEvent @entity {
   logIndex: BigInt!
   name: String!
   transaction: Transaction!  
+  address: String!
 }
 
 

@@ -50,7 +50,7 @@ export function handleInitialize(event: Initialize): void {
   ev.logIndex = event.logIndex
   ev.name = "Initialize"
   ev.transaction= event.transaction.hash.toHex()
-
+  ev.address = event.address.toHexString()
 
   ev.save()
   token0.save()
@@ -181,10 +181,9 @@ export function handleMint(event: MintEvent): void {
   ev.logIndex = event.logIndex
   ev.name = "Mint"
   ev.transaction= event.transaction.hash.toHex()
-
+  ev.address = event.address.toString()
 
   ev.save()
-
   token0.save()
   token1.save()
   pool.save()
@@ -303,7 +302,7 @@ export function handleBurn(event: BurnEvent): void {
   ev.logIndex = event.logIndex
   ev.name = "Burn"
   ev.transaction= event.transaction.hash.toHex()
-
+  ev.address = event.address.toHexString()
 
   ev.save()
   token0.save()
@@ -412,7 +411,7 @@ export function handleBurnRTokens(event: BurnRTokensEvent): void {
   ev.logIndex = event.logIndex
   ev.name = "BurnRTokens"
   ev.transaction= event.transaction.hash.toHex()
-
+  ev.address = event.address.toString()
 
   ev.save()
   token0.save()
@@ -613,7 +612,7 @@ export function handleSwap(event: SwapEvent): void {
   ev.logIndex = event.logIndex
   ev.name = "Swap"
   ev.transaction= event.transaction.hash.toHex()
-
+  ev.address = event.address.toHexString()
 
   ev.save()
   swap.save()
@@ -682,8 +681,9 @@ export function handleFlash(event: FlashEvent): void {
   ev.logIndex = event.logIndex
   ev.name = "Flash"
   ev.transaction= event.transaction.hash.toHex()
-  ev.save()
+  ev.address = event.address.toHexString()
 
+  ev.save()
   pool.save()
 }
 
