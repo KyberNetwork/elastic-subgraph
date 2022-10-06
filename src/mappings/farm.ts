@@ -87,6 +87,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     ev.name = "RewardContractAdded"
     ev.transaction= event.transaction.hash.toHex()
     ev.address = event.address.toHexString()
+    ev.extra = "{" + `"poolLength": ` + len.value.toString() + "}"
     ev.save()
     farmingPool.save()
   }
@@ -114,6 +115,7 @@ export function handleAddPool(event: AddPool): void {
   ev.name = "AddPool"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
+  ev.extra = "{" + `"pid": ` + pid.toString() + "}"
   ev.save()
   farmingPool.save()
 }
@@ -142,6 +144,7 @@ export function handleRenewPool(event: RenewPool): void {
   ev.name = "RenewPool"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
+  ev.extra = "{" + `"pid": `+ farmingPool.pid + "}"
   ev.save()
   farmingPool.save()
 }
@@ -173,6 +176,7 @@ export function handleJoin(event: Join): void {
   ev.name = "Join"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
+  ev.extra = "{" +`"pid":`+ event.params.pId.toString() + "," +`"nftId": `+ event.params.nftId.toString() + "}"
   ev.save()
   joinedPosition.save()
 }
@@ -194,6 +198,7 @@ export function handleExit(event: Exit): void {
   ev.name = "Exit"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
+  ev.extra = "{" +`"pid": `+ event.params.pId.toString() + "," +`"nftId": `+ event.params.nftId.toString() + "}"
   ev.save()
 
   joinedPosition.save()

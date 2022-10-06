@@ -91,6 +91,8 @@ export function handleMintPosition(event: MintPosition): void {
   ev.name = "MintPosition"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
+  ev.extra = "{" + "tokenId: " + event.params.tokenId.toString() + "}"
+
   ev.save()
   position.save()
 

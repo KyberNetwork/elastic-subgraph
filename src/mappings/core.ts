@@ -181,7 +181,12 @@ export function handleMint(event: MintEvent): void {
   ev.logIndex = event.logIndex
   ev.name = "Mint"
   ev.transaction= event.transaction.hash.toHex()
-  ev.address = event.address.toString()
+  ev.address = event.address.toHexString()
+  let a = new Array<i32>(1)
+  a.push(event.params.tickUpper) 
+  let b = new Array<i32>(1)
+  b.push(event.params.tickLower)
+  ev.extra = "{" + `"tickUpper": ` + a.toString().substring(2) + "," + `"tickLower": ` + b.toString().substring(2) + "}"
 
   ev.save()
   token0.save()
@@ -303,6 +308,11 @@ export function handleBurn(event: BurnEvent): void {
   ev.name = "Burn"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
+  let a = new Array<i32>(1)
+  a.push(event.params.tickUpper)
+  let b = new Array<i32>(1)
+  b.push(event.params.tickLower)
+  ev.extra = "{" + `"tickUpper": ` + a.toString().substring(2) + "," + `"tickLower": ` + b.toString().substring(2) + "}"
 
   ev.save()
   token0.save()
@@ -411,7 +421,7 @@ export function handleBurnRTokens(event: BurnRTokensEvent): void {
   ev.logIndex = event.logIndex
   ev.name = "BurnRTokens"
   ev.transaction= event.transaction.hash.toHex()
-  ev.address = event.address.toString()
+  ev.address = event.address.toHexString()
 
   ev.save()
   token0.save()
@@ -613,6 +623,9 @@ export function handleSwap(event: SwapEvent): void {
   ev.name = "Swap"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
+  let a = new Array<i32>(1)
+	a.push(event.params.currentTick)
+  ev.extra = "{" + `"currentTick": `+ a.toString().substring(2) + "}"
 
   ev.save()
   swap.save()

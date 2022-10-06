@@ -662,6 +662,7 @@ type ContractEvent @entity {
   name: String!
   transaction: Transaction!  
   address: String!
+  extra: String
 }
 
 
