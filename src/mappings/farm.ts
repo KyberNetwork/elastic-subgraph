@@ -87,7 +87,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     ev.name = "RewardContractAdded"
     ev.transaction= event.transaction.hash.toHex()
     ev.address = event.address.toHexString()
-    ev.extra = "{" + `"poolLength": ` + len.value.toString() + "}"
+    ev.extra = "{" + `"poolLength": ` + len.value.toString() + "," + `"farm":` +  event.params.rewardContract.toHex() + "}"
     ev.save()
     farmingPool.save()
   }
