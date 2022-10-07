@@ -650,9 +650,16 @@ type FarmingPool @entity {
   feeTarget: BigInt!
   vestingDuration: BigInt!
   pool: Pool!
-  rewardTokens: [Token!]!
-  totalRewardAmounts: [BigInt!]!
+  rewardTokens: [RewardToken!]! @derivedFrom(field: "farmingPool")
   joinedPositions: [JoinedPosition!]! @derivedFrom(field: "farmingPool")
+}
+
+type RewardToken @entity {
+  # farming pool id
+  id: ID!
+  token: Token!
+  amount: BigInt!
+  farmingPool: FarmingPool!
 }
 
 # Aggregate event, deleted when withdraw

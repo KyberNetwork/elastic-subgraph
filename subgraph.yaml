@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: optimism
+    network: mainnet
     source:
       address: '0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a'
       abi: Factory
-      startBlock: 12001267
+      startBlock: 14932476
       # startBlock: 10194215
     mapping:
       kind: ethereum/events
@@ -36,11 +36,11 @@ dataSources:
           handler: handlePoolCreated
   - kind: ethereum/contract
     name: AntiSnipAttackPositionManager
-    network: optimism
+    network: mainnet
     source:
       address: '0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8'
       abi: AntiSnipAttackPositionManager
-      startBlock: 12001267
+      startBlock: 14932476
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -71,11 +71,11 @@ dataSources:
           handler: handleTransfer
   - kind: ethereum/contract
     name: KyberRewardLocker
-    network: optimism
+    network: mainnet
     source:
       address: '0x10f6fb1a8b495a972bdce5bf86f2969f64359b00'
       abi: KyberRewardLocker
-      startBlock: 22101471  # contract creation block
+      startBlock: 15325778  # contract creation block
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -102,7 +102,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: optimism
+    network: mainnet
     source:
       abi: Pool
     mapping:
@@ -136,7 +136,7 @@ templates:
 
   - kind: ethereum/contract
     name: KyberFairLaunch
-    network: optimism
+    network: mainnet
     source:
       abi: KyberFairLaunch
     mapping:

@@ -10,7 +10,7 @@ import {
   EmergencyWithdraw,
   Deposit
 } from '../types/templates/KyberFairLaunch/KyberFairLaunch'
-import { Farm, JoinedPosition, FarmingPool, Token, DepositedPosition } from '../types/schema'
+import { Farm, JoinedPosition, FarmingPool, Token, DepositedPosition, RewardToken } from '../types/schema'
 import { KyberFairLaunch as KyberFairLaunchTemplate } from '../types/templates'
 import { ZERO_BI, ADDRESS_ZERO, WETH_ADDRESS, ZERO_BD } from '../utils/constants'
 import { BigInt, log, Address, store } from '@graphprotocol/graph-ts'
@@ -81,11 +81,15 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     farmingPool.vestingDuration = poolInfo.value3
     farmingPool.pool = poolInfo.value0.toHexString()
     farmingPool.farm = fairLaunch.id
-    farmingPool.rewardTokens = poolInfo.value7.map<string>(item => {
-      return getToken(item)
-    })
-
-    farmingPool.totalRewardAmounts = poolInfo.value8
+    for (let i = 0; i < poolInfo.value7.length; i++) {
+      let token = getToken(poolInfo.value7[i])
+      let amount = poolInfo.value8[i]
+      let rewardToken = new RewardToken(event.params.rewardContract.toHexString() + '_' + i.toString())
+      rewardToken.token = token
+      rewardToken.amount = amount
+      rewardToken.farmingPool = farmingPool.id
+      rewardToken.save()
+    }
     farmingPool.save()
   }
 }
@@ -103,8 +107,15 @@ export function handleAddPool(event: AddPool): void {
   farmingPool.vestingDuration = event.params.vestingDuration
   farmingPool.pool = poolInfo.value0.toHexString()
   farmingPool.farm = event.address.toHexString()
-  farmingPool.rewardTokens = poolInfo.value7.map<string>(item => getToken(item))
-  farmingPool.totalRewardAmounts = poolInfo.value8
+  for (let i = 0; i < poolInfo.value7.length; i++) {
+    let token = getToken(poolInfo.value7[i])
+    let amount = poolInfo.value8[i]
+    let rewardToken = new RewardToken(event.address.toHexString() + '_' + pid.toString())
+    rewardToken.token = token
+    rewardToken.amount = amount
+    rewardToken.farmingPool = farmingPool.id
+    rewardToken.save()
+  }
   farmingPool.save()
 }
 
@@ -123,9 +134,16 @@ export function handleRenewPool(event: RenewPool): void {
   farmingPool.vestingDuration = event.params.vestingDuration
   farmingPool.pool = poolInfo.value0.toHexString()
   farmingPool.farm = event.address.toHexString()
-  farmingPool.rewardTokens = poolInfo.value7.map<string>(item => getToken(item))
 
-  farmingPool.totalRewardAmounts = poolInfo.value8
+  for (let i = 0; i < poolInfo.value7.length; i++) {
+    let token = getToken(poolInfo.value7[i])
+    let amount = poolInfo.value8[i]
+    let rewardToken = new RewardToken('reward' + '_' + event.address.toHexString() + '_' + event.params.pid.toString())
+    rewardToken.token = token
+    rewardToken.amount = amount
+    rewardToken.farmingPool = farmingPool.id
+    rewardToken.save()
+  }
   farmingPool.save()
 }
 
