@@ -4,16 +4,20 @@ import {
   RenewPool,
   Join,
   Exit,
-  KyberFairLaunch as KyberFairLaunchContract
+  KyberFairLaunch as KyberFairLaunchContract,
+  SyncLiq,
+  Withdraw,
+  EmergencyWithdraw,
+  Deposit
 } from '../types/templates/KyberFairLaunch/KyberFairLaunch'
-import { KyberFairLaunch, JoinedPosition, FarmingPool, Token } from '../types/schema'
+import { Farm, JoinedPosition, FarmingPool, Token, DepositedPosition } from '../types/schema'
 import { KyberFairLaunch as KyberFairLaunchTemplate } from '../types/templates'
 import { ZERO_BI, ADDRESS_ZERO, WETH_ADDRESS, ZERO_BD } from '../utils/constants'
-import { BigInt, log, Address } from '@graphprotocol/graph-ts'
+import { BigInt, log, Address, store } from '@graphprotocol/graph-ts'
 import { fetchTokenSymbol, fetchTokenName, fetchTokenTotalSupply, fetchTokenDecimals } from '../utils/token'
 
 function getToken(item: Address): string {
-  if (item.toHexString() == ADDRESS_ZERO) return WETH_ADDRESS
+  if (item.toHexString() === ADDRESS_ZERO) return WETH_ADDRESS
 
   let token = Token.load(item.toHexString())
   if (token === null) {
@@ -46,36 +50,37 @@ function getToken(item: Address): string {
   return token.id
 }
 export function handleRewardContractAdded(event: RewardContractAdded): void {
-  let fairLaunch = KyberFairLaunch.load(event.params.rewardContract.toHex())
+  let fairLaunch = Farm.load(event.params.rewardContract.toHex())
   if (fairLaunch !== null) {
     return
   }
 
   KyberFairLaunchTemplate.create(event.params.rewardContract)
   //init reward contract
-  fairLaunch = new KyberFairLaunch(event.params.rewardContract.toHex())
+  fairLaunch = new Farm(event.params.rewardContract.toHex())
+  log.debug('locker: {}', [event.address.toHexString()])
+  fairLaunch.rewardLocker = event.address.toHexString()
   fairLaunch.save()
 
   // get pool
   let fairLaunchContract = KyberFairLaunchContract.bind(event.params.rewardContract)
   let len = fairLaunchContract.try_poolLength()
 
-  log.debug('123456 out {}', [event.params.rewardContract.toHexString()])
   if (len.reverted) {
-    log.debug('123456 in {}', [event.params.rewardContract.toHexString()])
     return
   }
 
+  // look back to get current farm
   for (let i: i32 = 0; i < len.value.toI32(); i++) {
     let poolInfo = fairLaunchContract.getPoolInfo(BigInt.fromI32(i))
     let farmingPool = new FarmingPool(event.params.rewardContract.toHexString() + '_' + i.toString())
-    farmingPool.pid = i.toString()
+    farmingPool.pid = BigInt.fromI32(i)
     farmingPool.startTime = poolInfo.value1
     farmingPool.endTime = poolInfo.value2
     farmingPool.feeTarget = poolInfo.value5
     farmingPool.vestingDuration = poolInfo.value3
     farmingPool.pool = poolInfo.value0.toHexString()
-    farmingPool.fairLaunch = event.address.toHexString()
+    farmingPool.farm = fairLaunch.id
     farmingPool.rewardTokens = poolInfo.value7.map<string>(item => {
       return getToken(item)
     })
@@ -91,13 +96,13 @@ export function handleAddPool(event: AddPool): void {
   let pid = len.minus(BigInt.fromI32(1))
   let poolInfo = fairLaunchContract.getPoolInfo(len.minus(BigInt.fromI32(1)))
   let farmingPool = new FarmingPool(event.address.toHexString() + '_' + pid.toString())
-  farmingPool.pid = pid.toString()
+  farmingPool.pid = pid
   farmingPool.startTime = event.params.startTime
   farmingPool.endTime = event.params.endTime
   farmingPool.feeTarget = event.params.feeTarget
   farmingPool.vestingDuration = event.params.vestingDuration
   farmingPool.pool = poolInfo.value0.toHexString()
-  farmingPool.fairLaunch = event.address.toHexString()
+  farmingPool.farm = event.address.toHexString()
   farmingPool.rewardTokens = poolInfo.value7.map<string>(item => getToken(item))
   farmingPool.totalRewardAmounts = poolInfo.value8
   farmingPool.save()
@@ -111,13 +116,13 @@ export function handleRenewPool(event: RenewPool): void {
     farmingPool = new FarmingPool(event.address.toHexString() + '_' + event.params.pid.toString())
   }
   let poolInfo = fairLaunchContract.getPoolInfo(event.params.pid)
-  farmingPool.pid = event.params.pid.toString()
+  farmingPool.pid = event.params.pid
   farmingPool.startTime = event.params.startTime
   farmingPool.endTime = event.params.endTime
   farmingPool.feeTarget = event.params.feeTarget
   farmingPool.vestingDuration = event.params.vestingDuration
   farmingPool.pool = poolInfo.value0.toHexString()
-  farmingPool.fairLaunch = event.address.toHexString()
+  farmingPool.farm = event.address.toHexString()
   farmingPool.rewardTokens = poolInfo.value7.map<string>(item => getToken(item))
 
   farmingPool.totalRewardAmounts = poolInfo.value8
@@ -125,9 +130,6 @@ export function handleRenewPool(event: RenewPool): void {
 }
 
 export function handleJoin(event: Join): void {
-  let fairLaunchContract = KyberFairLaunchContract.bind(event.address)
-  let poolInfo = fairLaunchContract.getPoolInfo(event.params.pId)
-
   let joinedPosition = JoinedPosition.load(
     event.address.toHexString() + '_' + event.params.pId.toString() + '_' + event.params.nftId.toString()
   )
@@ -138,25 +140,77 @@ export function handleJoin(event: Join): void {
     )
   }
 
+  joinedPosition.user = event.transaction.from
   joinedPosition.pid = event.params.pId
-  joinedPosition.nftId = event.params.nftId
   joinedPosition.liquidity = event.params.liq
-  joinedPosition.pool = poolInfo.value0.toHexString()
+  joinedPosition.farmingPool = event.address.toHexString() + '_' + event.params.pId.toString()
   joinedPosition.position = event.params.nftId.toString()
-  joinedPosition.fairLaunch = event.address.toHexString()
+
+  joinedPosition.save()
+}
+
+export function handleSync(event: SyncLiq): void {
+  let joinedPosition = JoinedPosition.load(
+    event.address.toHexString() + '_' + event.params.pId.toString() + '_' + event.params.nftId.toString()
+  )
+
+  if (joinedPosition === null) {
+    joinedPosition = new JoinedPosition(
+      event.address.toHexString() + '_' + event.params.pId.toString() + '_' + event.params.nftId.toString()
+    )
+    joinedPosition.liquidity = ZERO_BI
+  }
+
+  joinedPosition.pid = event.params.pId
+  joinedPosition.liquidity = event.params.liq.plus(joinedPosition.liquidity)
+  joinedPosition.farmingPool = event.address.toHexString() + '_' + event.params.pId.toString()
+  joinedPosition.position = event.params.nftId.toString()
 
   joinedPosition.save()
 }
 
 export function handleExit(event: Exit): void {
   let joinedPosition = JoinedPosition.load(
-    event.address.toHexString() + '_' + event.params.pId.toString() + '_' + event.params.pId.toString()
+    event.address.toHexString() + '_' + event.params.pId.toString() + '_' + event.params.nftId.toString()
   )
 
   if (joinedPosition === null) {
     return
   }
 
-  joinedPosition.liquidity = ZERO_BI
-  joinedPosition.save()
+  let newLiq = joinedPosition.liquidity.minus(event.params.liq)
+  if (newLiq.equals(ZERO_BI)) {
+    store.remove('JoinedPosition', joinedPosition.id)
+  } else {
+    joinedPosition.liquidity = newLiq
+    joinedPosition.save()
+  }
+}
+
+export function handleDeposit(event: Deposit): void {
+  let depostedPosition = new DepositedPosition(event.params.nftId.toString())
+  depostedPosition.user = event.params.sender
+  depostedPosition.farm = event.address.toHexString()
+  depostedPosition.position = event.params.nftId.toString()
+  depostedPosition.save()
+}
+
+export function handleWithdraw(event: Withdraw): void {
+  let depostedPosition = DepositedPosition.load(event.params.nftId.toString())
+  if (depostedPosition) {
+    store.remove('DepositedPosition', depostedPosition.id)
+  }
+}
+
+export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
+  handleWithdraw(event as Withdraw)
+
+  // TODO: remove joinedPositions when EmergencyWithdraw
+  // let farm = Farm.load(event.address.toHexString())
+  // farm.farmingPools.forEach(pool => {
+  //   let joinedPositions = JoinedPosition.load(pool.toString() + '_' + event.params.nftId.toString())
+  //   if (joinedPositions) {
+  //     store.remove('JoinedPosition', pool.toString() + '_' + event.params.nftId.toString())
+  //   }
+  // })
 }

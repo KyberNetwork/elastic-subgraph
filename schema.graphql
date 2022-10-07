@@ -256,12 +256,12 @@ type Transaction @entity {
   gasUsed: BigInt!
   gasPrice: BigInt!
   # derived values
-  mints: [Mint]! @derivedFrom(field: "transaction")
-  burns: [Burn]! @derivedFrom(field: "transaction")
-  burnRTokens: [Burn]! @derivedFrom(field: "transaction")
-  swaps: [Swap]! @derivedFrom(field: "transaction")
-  flashed: [Flash]! @derivedFrom(field: "transaction")
-  collects: [Collect]! @derivedFrom(field: "transaction")
+  mints: [Mint!]! @derivedFrom(field: "transaction")
+  burns: [Burn!]! @derivedFrom(field: "transaction")
+  burnRTokens: [Burn!]! @derivedFrom(field: "transaction")
+  swaps: [Swap!]! @derivedFrom(field: "transaction")
+  flashed: [Flash!]! @derivedFrom(field: "transaction")
+  collects: [Collect!]! @derivedFrom(field: "transaction")
 }
 
 type Mint @entity {
@@ -633,30 +633,44 @@ type TokenHourData @entity {
   close: BigDecimal!
 }
 
-type JoinedPosition @entity {
-  id: ID!
-  pid: BigInt!
-  nftId: BigInt!
-  liquidity: BigInt!
-  pool: Pool!
-  position: Position!
-  fairLaunch: KyberFairLaunch!
+type Farm @entity {
+  id: ID! # farm contract address
+  rewardLocker: String!
+  farmingPools: [FarmingPool!]! @derivedFrom(field: "farm")
+  depostedPositions: [DepositedPosition!]! @derivedFrom(field: "farm")
 }
 
+
 type FarmingPool @entity {
-  id: ID!
-  pid: ID!
+  id: ID! # [farm_contract]_[pid]
+  farm: Farm!
+  pid: BigInt!
   startTime: BigInt!
   endTime: BigInt!
   feeTarget: BigInt!
   vestingDuration: BigInt!
   pool: Pool!
-  fairLaunch: KyberFairLaunch!
   rewardTokens: [Token!]!
   totalRewardAmounts: [BigInt!]!
+  joinedPositions: [JoinedPosition!]! @derivedFrom(field: "farmingPool")
+}
+
+# Aggregate event, deleted when withdraw
+type DepositedPosition @entity {
+  id: ID! # [nftId]
+  user: Bytes!
+  farm: Farm!
+  position: Position!
+}
+
+type JoinedPosition @entity {
+  id: ID! #[farm_contract]_[pid]_[nftId]
+  user: Bytes! # owner of nft
+  pid: BigInt!
+  liquidity: BigInt!
+  farmingPool: FarmingPool!
+  position: Position!
 }
 
 
-type KyberFairLaunch @entity {
-  id: ID!
-}
+

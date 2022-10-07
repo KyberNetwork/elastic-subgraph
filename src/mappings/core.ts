@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token } from '../types/schema'
 import { Pool as PoolABI } from '../types/Factory/Pool'
-import { ERC20 } from '../types/templates/pool/ERC20'
+import { ERC20 } from '../types/templates/Pool/ERC20'
 import { BigDecimal, BigInt, ethereum, log, Address } from '@graphprotocol/graph-ts'
 import {
   Burn as BurnEvent,
