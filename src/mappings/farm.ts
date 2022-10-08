@@ -187,6 +187,14 @@ export function handleJoin(event: Join): void {
   joinedPosition.farmingPool = event.address.toHexString() + '_' + event.params.pId.toString()
   joinedPosition.position = event.params.nftId.toString()
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Join"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+  ev.extra = "{" +`"pid":`+ event.params.pId.toString() + "," +`"nftId": `+ event.params.nftId.toString() + "}"
+  ev.save()
   joinedPosition.save()
 }
 
@@ -210,7 +218,7 @@ export function handleSync(event: SyncLiq): void {
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
   ev.logIndex = event.logIndex
-  ev.name = "Join"
+  ev.name = "Sync"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
   ev.extra = "{" +`"pid":`+ event.params.pId.toString() + "," +`"nftId": `+ event.params.nftId.toString() + "}"
@@ -250,6 +258,14 @@ export function handleDeposit(event: Deposit): void {
   depostedPosition.user = event.params.sender
   depostedPosition.farm = event.address.toHexString()
   depostedPosition.position = event.params.nftId.toString()
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Deposit"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+  ev.extra = "{" +`"nftId": `+ event.params.nftId.toString() + "}"
+  ev.save()
   depostedPosition.save()
 }
 
@@ -258,6 +274,14 @@ export function handleWithdraw(event: Withdraw): void {
   if (depostedPosition) {
     store.remove('DepositedPosition', depostedPosition.id)
   }
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Withdraw"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+  ev.extra = "{" +`"nftId": `+ event.params.nftId.toString() + "}"
+  ev.save()
 }
 
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
