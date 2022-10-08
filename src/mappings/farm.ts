@@ -81,11 +81,11 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     farmingPool.vestingDuration = poolInfo.value3
     farmingPool.pool = poolInfo.value0.toHexString()
     farmingPool.farm = fairLaunch.id
-    for (let i = 0; i < poolInfo.value7.length; i++) {
-      let token = getToken(poolInfo.value7[i])
-      let amount = poolInfo.value8[i]
+    for (let j = 0; j < poolInfo.value7.length; j++) {
+      let token = getToken(poolInfo.value7[j])
+      let amount = poolInfo.value8[j]
       let rewardToken = new RewardToken(
-        event.params.rewardContract.toHexString() + '_' + i.toString() + '_' + poolInfo.value7[i].toHexString()
+        event.params.rewardContract.toHexString() + '_' + i.toString() + '_' + poolInfo.value7[j].toHexString()
       )
       rewardToken.token = token
       rewardToken.amount = amount
