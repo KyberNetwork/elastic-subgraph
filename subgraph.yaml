@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: bsc
+    network: mainnet
     source:
       address: '0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a'
       abi: Factory
-      startBlock: 18532980
+      startBlock: 14932476
       # startBlock: 10194215
     mapping:
       kind: ethereum/events
@@ -36,11 +36,11 @@ dataSources:
           handler: handlePoolCreated
   - kind: ethereum/contract
     name: AntiSnipAttackPositionManager
-    network: bsc
+    network: mainnet
     source:
       address: '0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8'
       abi: AntiSnipAttackPositionManager
-      startBlock: 18532980
+      startBlock: 14932476
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -69,10 +69,40 @@ dataSources:
         #   handler: handleCollect
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
+  - kind: ethereum/contract
+    name: KyberRewardLocker
+    network: mainnet
+    source:
+      address: '0x10f6fb1a8b495a972bdce5bf86f2969f64359b00'
+      abi: KyberRewardLocker
+      startBlock: 15325778  # contract creation block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/farm.ts
+      entities:   # defines which entities are written to stores
+        - RewardLockers
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+        - name: KyberRewardLocker
+          file: ./abis/KyberRewardLocker.json
+        - name: KyberFairLaunch
+          file: ./abis/KyberFairLaunch.json
+      eventHandlers:
+        - event: RewardContractAdded(indexed address,indexed address,bool)
+          handler: handleRewardContractAdded
+        # - event: Vested(indexed address,indexed address,uint256,uint256)
+        #   handler: handleVestd
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: bsc
+    network: mainnet
     source:
       abi: Pool
     mapping:
@@ -104,3 +134,43 @@ templates:
         - event: Flash(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleFlash
 
+  - kind: ethereum/contract
+    name: KyberFairLaunch
+    network: mainnet
+    source:
+      abi: KyberFairLaunch
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/farm.ts
+      entities:
+        - Pool
+        - Token
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+        - name: KyberFairLaunch
+          file: ./abis/KyberFairLaunch.json
+      eventHandlers:
+        - event: AddPool(indexed uint256,address,uint32,uint32,uint32,uint256)
+          handler: handleAddPool
+        - event: RenewPool(indexed uint256,uint32,uint32,uint32,uint256)
+          handler: handleRenewPool
+        - event: Deposit(address,indexed uint256)
+          handler: handleDeposit
+        - event: Join(indexed uint256,indexed uint256,indexed uint256)
+          handler: handleJoin
+        # fist time join pool => Event Join was triggered but when increaseLiq, event SyncLiq will be triggered
+        - event: SyncLiq(indexed uint256,indexed uint256,indexed uint256)
+          handler: handleSync
+        - event: Exit(address,indexed uint256,indexed uint256,indexed uint256)
+          handler: handleExit
+        - event: Withdraw(address,indexed uint256)
+          handler: handleWithdraw
+        - event: EmergencyWithdraw(address,indexed uint256)
+          handler: handleEmergencyWithdraw

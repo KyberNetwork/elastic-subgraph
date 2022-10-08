@@ -633,27 +633,25 @@ type TokenHourData @entity {
   close: BigDecimal!
 }
 
-type JoinedPosition @entity {
-  id: ID!
-  pid: BigInt!
-  nftId: BigInt!
-  liquidity: BigInt!
-  pool: Pool!
-  position: Position!
-  fairLaunch: KyberFairLaunch!
+type Farm @entity {
+  id: ID! # farm contract address
+  rewardLocker: String!
+  farmingPools: [FarmingPool!]! @derivedFrom(field: "farm")
+  depostedPositions: [DepositedPosition!]! @derivedFrom(field: "farm")
 }
 
+
 type FarmingPool @entity {
-  id: ID!
-  pid: ID!
+  id: ID! # [farm_contract]_[pid]
+  farm: Farm!
+  pid: BigInt!
   startTime: BigInt!
   endTime: BigInt!
   feeTarget: BigInt!
   vestingDuration: BigInt!
   pool: Pool!
-  fairLaunch: KyberFairLaunch!
-  rewardTokens: [Token!]!
-  totalRewardAmounts: [BigInt!]!
+  rewardTokens: [RewardToken!]! @derivedFrom(field: "farmingPool")
+  joinedPositions: [JoinedPosition!]! @derivedFrom(field: "farmingPool")
 }
 
 type ContractEvent @entity {
@@ -666,6 +664,30 @@ type ContractEvent @entity {
 }
 
 
-type KyberFairLaunch @entity {
+type RewardToken @entity {
+  # farming pool id
   id: ID!
+  token: Token!
+  amount: BigInt!
+  farmingPool: FarmingPool!
 }
+
+# Aggregate event, deleted when withdraw
+type DepositedPosition @entity {
+  id: ID! # [nftId]
+  user: Bytes!
+  farm: Farm!
+  position: Position!
+}
+
+type JoinedPosition @entity {
+  id: ID! #[farm_contract]_[pid]_[nftId]
+  user: Bytes! # owner of nft
+  pid: BigInt!
+  liquidity: BigInt!
+  farmingPool: FarmingPool!
+  position: Position!
+}
+
+
+

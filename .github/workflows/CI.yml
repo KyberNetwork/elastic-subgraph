@@ -37,10 +37,5 @@ jobs:
             ${{ matrix.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn install
+        run: export NETWORK=mainnet && yarn install && yarn codegen && yarn build
 
-      - name: Run GraphQL codegen
-        run: yarn codegen
-
-      - name: Build project
-        run: yarn build
