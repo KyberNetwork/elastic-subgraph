@@ -91,7 +91,7 @@ export function handleMintPosition(event: MintPosition): void {
   ev.name = "MintPosition"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
-  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool:"` + position.pool +  "}"
+  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool":"` + position.pool +  `"}`
 
   ev.save()
   position.save()
@@ -117,7 +117,7 @@ export function handleIncreaseLiquidity(event: AddLiquidity): void {
   ev.name = "IncreaseLiquidity"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
-  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool:"` + position.pool +  "}"
+  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool":"` + position.pool +  `"}`
   ev.save()
   position.save()
 
@@ -146,7 +146,7 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
   ev.name = "DecreaseLiquidity"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
-  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool:"` + position.pool +  "}"
+  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool":"` + position.pool +  `"}`
   ev.save()
   position.save()
 
@@ -168,7 +168,7 @@ export function handleTransfer(event: Transfer): void {
   ev.name = "Transfer"
   ev.transaction= event.transaction.hash.toHex()
   ev.address = event.address.toHexString()
-  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool:"` + position.pool +  "}"
+  ev.extra = "{" + `"tokenId": ` + event.params.tokenId.toString() + "," +`"pool":"` + position.pool +  `"}`
   ev.save()
   position.save()
 
