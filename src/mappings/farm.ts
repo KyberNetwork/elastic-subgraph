@@ -81,10 +81,12 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     farmingPool.vestingDuration = poolInfo.value3
     farmingPool.pool = poolInfo.value0.toHexString()
     farmingPool.farm = fairLaunch.id
-    for (let i = 0; i < poolInfo.value7.length; i++) {
-      let token = getToken(poolInfo.value7[i])
-      let amount = poolInfo.value8[i]
-      let rewardToken = new RewardToken(event.params.rewardContract.toHexString() + '_' + i.toString())
+    for (let j = 0; j < poolInfo.value7.length; j++) {
+      let token = getToken(poolInfo.value7[j])
+      let amount = poolInfo.value8[j]
+      let rewardToken = new RewardToken(
+        event.params.rewardContract.toHexString() + '_' + i.toString() + '_' + poolInfo.value7[j].toHexString()
+      )
       rewardToken.token = token
       rewardToken.amount = amount
       rewardToken.farmingPool = farmingPool.id
@@ -117,7 +119,9 @@ export function handleAddPool(event: AddPool): void {
   for (let i = 0; i < poolInfo.value7.length; i++) {
     let token = getToken(poolInfo.value7[i])
     let amount = poolInfo.value8[i]
-    let rewardToken = new RewardToken(event.address.toHexString() + '_' + pid.toString())
+    let rewardToken = new RewardToken(
+      event.address.toHexString() + '_' + pid.toString() + '_' + poolInfo.value7[i].toHexString()
+    )
     rewardToken.token = token
     rewardToken.amount = amount
     rewardToken.farmingPool = farmingPool.id
@@ -153,7 +157,9 @@ export function handleRenewPool(event: RenewPool): void {
   for (let i = 0; i < poolInfo.value7.length; i++) {
     let token = getToken(poolInfo.value7[i])
     let amount = poolInfo.value8[i]
-    let rewardToken = new RewardToken('reward' + '_' + event.address.toHexString() + '_' + event.params.pid.toString())
+    let rewardToken = new RewardToken(
+      event.address.toHexString() + '_' + event.params.pid.toString() + '_' + poolInfo.value7[i].toHexString()
+    )
     rewardToken.token = token
     rewardToken.amount = amount
     rewardToken.farmingPool = farmingPool.id
