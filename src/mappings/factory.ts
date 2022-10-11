@@ -140,7 +140,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.collectedFeesToken1 = ZERO_BD
   pool.collectedFeesUSD = ZERO_BD
   pool.positionCount = ZERO_BI
-  pool.closedPostionCount = ZERO_BI
+  pool.closedPositionCount = ZERO_BI
 
 // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())

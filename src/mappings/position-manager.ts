@@ -136,7 +136,7 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
 
   let pool = Pool.load(position.pool)
   if (position.liquidity.equals(ZERO_BI)) {
-    pool.closedPostionCount = pool.closedPostionCount.plus(ONE_BI)
+    pool.closedPositionCount = pool.closedPositionCount.plus(ONE_BI)
     pool.save()
   }
   position = updateFeeVars(position!, event, event.params.tokenId)

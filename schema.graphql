@@ -150,7 +150,7 @@ type Pool @entity {
   collects: [Collect!]! @derivedFrom(field: "pool")
   ticks: [Tick!]! @derivedFrom(field: "pool")
   positionCount: BigInt!
-  closedPostionCount: BigInt!
+  closedPositionCount: BigInt!
   positions: [Position!]! @derivedFrom(field: "pool")
 }
 
