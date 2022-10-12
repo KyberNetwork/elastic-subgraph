@@ -90,6 +90,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
       rewardToken.token = token
       rewardToken.amount = amount
       rewardToken.farmingPool = farmingPool.id
+      rewardToken.priority = j
       rewardToken.save()
     }
     let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
@@ -125,6 +126,7 @@ export function handleAddPool(event: AddPool): void {
     rewardToken.token = token
     rewardToken.amount = amount
     rewardToken.farmingPool = farmingPool.id
+    rewardToken.priority = i
     rewardToken.save()
   }
   // note event info
@@ -163,6 +165,7 @@ export function handleRenewPool(event: RenewPool): void {
     rewardToken.token = token
     rewardToken.amount = amount
     rewardToken.farmingPool = farmingPool.id
+    rewardToken.priority = i
     rewardToken.save()
   }
   // note event info
