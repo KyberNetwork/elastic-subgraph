@@ -90,6 +90,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
       rewardToken.token = token
       rewardToken.amount = amount
       rewardToken.farmingPool = farmingPool.id
+      rewardToken.priority = j
       rewardToken.save()
     }
     farmingPool.save()
@@ -118,6 +119,7 @@ export function handleAddPool(event: AddPool): void {
     rewardToken.token = token
     rewardToken.amount = amount
     rewardToken.farmingPool = farmingPool.id
+    rewardToken.priority = i
     rewardToken.save()
   }
   farmingPool.save()
@@ -148,6 +150,7 @@ export function handleRenewPool(event: RenewPool): void {
     rewardToken.token = token
     rewardToken.amount = amount
     rewardToken.farmingPool = farmingPool.id
+    rewardToken.priority = i
     rewardToken.save()
   }
   farmingPool.save()

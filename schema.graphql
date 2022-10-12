@@ -660,6 +660,7 @@ type RewardToken @entity {
   token: Token!
   amount: BigInt!
   farmingPool: FarmingPool!
+  priority: Int!
 }
 
 # Aggregate event, deleted when withdraw
