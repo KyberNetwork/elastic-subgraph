@@ -34,8 +34,12 @@ function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
       // The owner gets correctly updated in the Transfer handler
       position.owner = Address.fromString(ADDRESS_ZERO)
       position.pool = poolAddress.toHexString()
-
       let pool = Pool.load(poolAddress.toHexString())
+
+      if (pool === null) {
+        return null
+      }
+
       pool.positionCount = pool.positionCount.plus(ONE_BI)
       pool.save()
 
