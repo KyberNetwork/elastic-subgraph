@@ -13,5 +13,5 @@
   "_stable_explain": ["DAI", "USDC", "fUSDT"],
   "whitelist_tokens": ["0x74b23882a30290451a17c44f4f05243b6b58c76d"],
   "_whitelist_explain": ["WETH"],
-  "minimum_eth_locked": "0"
+  "minimum_eth_locked": "1000"
 }
