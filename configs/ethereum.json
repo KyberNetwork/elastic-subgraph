@@ -11,8 +11,13 @@
     "0xdac17f958d2ee523a2206206994597c13d831ec7"
   ],
   "_stable_explain": ["DAI", "USDC", "USDT"],
-  "whitelist_tokens": ["0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202"],
-  "_whitelist_explain": ["KNC"],
+  "whitelist_tokens": [
+    "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
+    "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+    "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+    "0x514910771af9ca656af840dff83e8264ecf986ca"
+  ],
+  "_whitelist_explain": ["KNC", "LDO", "wstEth", "LINK"],
   "minimum_eth_locked": "0.5",
   "reward_locker": {
     "address": "0x10f6fb1a8b495a972bdce5bf86f2969f64359b00",
