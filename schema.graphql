@@ -150,7 +150,7 @@ type Pool @entity {
   collects: [Collect!]! @derivedFrom(field: "pool")
   ticks: [Tick!]! @derivedFrom(field: "pool")
   positionCount: BigInt!
-  closedPostionCount: BigInt!
+  closedPositionCount: BigInt!
   positions: [Position!]! @derivedFrom(field: "pool")
 }
 
@@ -653,6 +653,16 @@ type FarmingPool @entity {
   rewardTokens: [RewardToken!]! @derivedFrom(field: "farmingPool")
   joinedPositions: [JoinedPosition!]! @derivedFrom(field: "farmingPool")
 }
+
+type ContractEvent @entity {
+  id: ID!
+  logIndex: BigInt!
+  name: String!
+  transaction: Transaction!  
+  address: String!
+  extra: String
+}
+
 
 type RewardToken @entity {
   # farming pool id

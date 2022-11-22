@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token } from '../types/schema'
+import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token, ContractEvent } from '../types/schema'
 import { Pool as PoolABI } from '../types/Factory/Pool'
 import { ERC20 } from '../types/templates/Pool/ERC20'
 import { BigDecimal, BigInt, ethereum, log, Address } from '@graphprotocol/graph-ts'
@@ -44,6 +44,15 @@ export function handleInitialize(event: Initialize): void {
   // update token prices
   token0.derivedETH = findEthPerToken(token0 as Token)
   token1.derivedETH = findEthPerToken(token1 as Token)
+
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Initialize"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+
+  ev.save()
   token0.save()
   token1.save()
   pool.save()
@@ -167,6 +176,19 @@ export function handleMint(event: MintEvent): void {
   updateTokenHourData(token0 as Token, event)
   updateTokenHourData(token1 as Token, event)
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Mint"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+  let a = new Array<i32>(1)
+  a.push(event.params.tickUpper) 
+  let b = new Array<i32>(1)
+  b.push(event.params.tickLower)
+  ev.extra = "{" + `"tickUpper": ` + a.toString().substring(2) + "," + `"tickLower": ` + b.toString().substring(2) + "}"
+
+  ev.save()
   token0.save()
   token1.save()
   pool.save()
@@ -280,6 +302,19 @@ export function handleBurn(event: BurnEvent): void {
   updateTickFeeVarsAndSave(lowerTick!, event)
   updateTickFeeVarsAndSave(upperTick!, event)
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Burn"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+  let a = new Array<i32>(1)
+  a.push(event.params.tickUpper)
+  let b = new Array<i32>(1)
+  b.push(event.params.tickLower)
+  ev.extra = "{" + `"tickUpper": ` + a.toString().substring(2) + "," + `"tickLower": ` + b.toString().substring(2) + "}"
+
+  ev.save()
   token0.save()
   token1.save()
   pool.save()
@@ -381,6 +416,14 @@ export function handleBurnRTokens(event: BurnRTokensEvent): void {
   // updateTickFeeVarsAndSave(lowerTick!, event)
   // updateTickFeeVarsAndSave(upperTick!, event)
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "BurnRTokens"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+
+  ev.save()
   token0.save()
   token1.save()
   pool.save()
@@ -574,6 +617,17 @@ export function handleSwap(event: SwapEvent): void {
   token1HourData.untrackedVolumeUSD = token1HourData.untrackedVolumeUSD.plus(amountTotalUSDTracked)
   token1HourData.feesUSD = token1HourData.feesUSD.plus(feesUSD)
 
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Swap"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
+  let a = new Array<i32>(1)
+	a.push(event.params.currentTick)
+  ev.extra = "{" + `"currentTick": `+ a.toString().substring(2) + "}"
+
+  ev.save()
   swap.save()
   token0DayData.save()
   token1DayData.save()
@@ -634,7 +688,15 @@ export function handleFlash(event: FlashEvent): void {
   let pool = Pool.load(event.address.toHexString())
 
   syncFeeGrowth(pool, true)
+  
+  // note event info
+  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
+  ev.logIndex = event.logIndex
+  ev.name = "Flash"
+  ev.transaction= event.transaction.hash.toHex()
+  ev.address = event.address.toHexString()
 
+  ev.save()
   pool.save()
 }
 
