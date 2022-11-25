@@ -1,6 +1,6 @@
 {
   "network": "ethereum",
-  "startBlock": "14932476",
+  "startBlock": "15988880",
   "factory_address": "0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a",
   "position_manager_address": "0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8",
   "pricing_pools": "0x7d697d789ee19bc376474e0167bade9535a28cf4",

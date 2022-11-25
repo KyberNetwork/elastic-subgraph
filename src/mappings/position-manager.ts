@@ -36,8 +36,10 @@ function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
       position.pool = poolAddress.toHexString()
 
       let pool = Pool.load(poolAddress.toHexString())
-      pool.positionCount = pool.positionCount.plus(ONE_BI)
-      pool.save()
+      if (pool != null) {
+        pool.positionCount = pool.positionCount.plus(ONE_BI)
+        pool.save()
+      }
 
       position.token0 = positionResult.value1.token0.toHexString()
       position.token1 = positionResult.value1.token1.toHexString()
@@ -83,7 +85,7 @@ export function handleMintPosition(event: MintPosition): void {
 
   position.liquidity = position.liquidity.plus(event.params.liquidity)
 
-  updateFeeVars(position!, event, event.params.tokenId)
+  updateFeeVars(position, event, event.params.tokenId)
 
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
@@ -96,7 +98,7 @@ export function handleMintPosition(event: MintPosition): void {
   ev.save()
   position.save()
 
-  savePositionSnapshot(position!, event)
+  savePositionSnapshot(position, event)
 }
 
 export function handleIncreaseLiquidity(event: AddLiquidity): void {
@@ -109,7 +111,7 @@ export function handleIncreaseLiquidity(event: AddLiquidity): void {
 
   position.liquidity = position.liquidity.plus(event.params.liquidity)
 
-  updateFeeVars(position!, event, event.params.tokenId)
+  updateFeeVars(position, event, event.params.tokenId)
 
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
@@ -121,7 +123,7 @@ export function handleIncreaseLiquidity(event: AddLiquidity): void {
   ev.save()
   position.save()
 
-  savePositionSnapshot(position!, event)
+  savePositionSnapshot(position, event)
 }
 
 export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
@@ -135,11 +137,11 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
   position.liquidity = position.liquidity.minus(event.params.liquidity)
 
   let pool = Pool.load(position.pool)
-  if (position.liquidity.equals(ZERO_BI)) {
+  if (position.liquidity.equals(ZERO_BI) && pool != null) {
     pool.closedPositionCount = pool.closedPositionCount.plus(ONE_BI)
     pool.save()
   }
-  position = updateFeeVars(position!, event, event.params.tokenId)
+  position = updateFeeVars(position, event, event.params.tokenId)
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
   ev.logIndex = event.logIndex
@@ -150,7 +152,7 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
   ev.save()
   position.save()
 
-  savePositionSnapshot(position!, event)
+  savePositionSnapshot(position, event)
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -172,5 +174,5 @@ export function handleTransfer(event: Transfer): void {
   ev.save()
   position.save()
 
-  savePositionSnapshot(position!, event)
+  savePositionSnapshot(position, event)
 }
