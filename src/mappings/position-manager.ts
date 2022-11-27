@@ -9,7 +9,7 @@ import {
 } from '../types/AntiSnipAttackPositionManager/AntiSnipAttackPositionManager'
 import { Position, PositionSnapshot, Pool } from '../types/schema'
 import { ADDRESS_ZERO, factoryContract, ZERO_BI, ONE_BI } from '../utils/constants'
-import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ethereum, bus } from '@graphprotocol/graph-ts'
 import { loadTransaction } from '../utils'
 
 function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
@@ -130,6 +130,7 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
   position.save()
 
   savePositionSnapshot(position!, event)
+  bus.send('Handle Decrease Liquidity')
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -144,4 +145,5 @@ export function handleTransfer(event: Transfer): void {
   position.save()
 
   savePositionSnapshot(position!, event)
+  bus.send('Handle Transfer')
 }
