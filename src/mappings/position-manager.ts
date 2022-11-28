@@ -9,7 +9,7 @@ import {
 } from '../types/AntiSnipAttackPositionManager/AntiSnipAttackPositionManager'
 import { Position, PositionSnapshot, Pool } from '../types/schema'
 import { ADDRESS_ZERO, factoryContract, ZERO_BI, ONE_BI } from '../utils/constants'
-import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ethereum, bus } from '@graphprotocol/graph-ts'
 import { loadTransaction } from '../utils'
 
 function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
@@ -34,8 +34,12 @@ function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
       // The owner gets correctly updated in the Transfer handler
       position.owner = Address.fromString(ADDRESS_ZERO)
       position.pool = poolAddress.toHexString()
-
       let pool = Pool.load(poolAddress.toHexString())
+
+      if (pool === null) {
+        return null
+      }
+
       pool.positionCount = pool.positionCount.plus(ONE_BI)
       pool.save()
 
@@ -126,6 +130,7 @@ export function handleDecreaseLiquidity(event: RemoveLiquidity): void {
   position.save()
 
   savePositionSnapshot(position!, event)
+  bus.send('Handle Decrease Liquidity')
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -140,4 +145,5 @@ export function handleTransfer(event: Transfer): void {
   position.save()
 
   savePositionSnapshot(position!, event)
+  bus.send('Handle Transfer')
 }
